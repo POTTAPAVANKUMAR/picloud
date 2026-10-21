@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: picloud-portal-backend
+    restart: unless-stopped
+    ports:
+      - "5005:5005"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/cloudflared:/etc/cloudflared:rw
+    environment:
+      - EXEC_MODE=auto
+      - PORT=5005
+      - PG_CONTAINER=picloud-db
+      - PG_USER=picloud
+      - PG_DB=picloud
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: picloud-portal-frontend
+    restart: unless-stopped
+    ports:
+      - "3005:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://192.168.1.151:5005/api
+    depends_on:
+      - backend
