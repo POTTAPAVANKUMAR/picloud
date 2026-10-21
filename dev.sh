@@ -23,5 +23,5 @@ trap "kill $BACKEND_PID" EXIT
 
 # Start frontend
 cd ../frontend
-echo "Starting Next.js Frontend on http://localhost:3000..."
-npm run dev
+echo "Starting Angular + Bootstrap 5 Frontend on http://localhost:4200..."
+npm start

@@ -94,6 +94,7 @@ export interface IngressConfig {
 
 export interface ListeningPort {
   port: string;
+  protocol?: string;
   process: string;
   pid: string;
   user: string;
@@ -127,4 +128,14 @@ export interface SystemdService {
   active: boolean;
   status: string;
   enabled: string;
+}
+
+export interface DeployAppRequest {
+  name: string;
+  image: string;
+  host_port?: number;
+  container_port?: number;
+  env_vars?: Record<string, string>;
+  restart_policy?: string;
+  subdomain?: string;
 }

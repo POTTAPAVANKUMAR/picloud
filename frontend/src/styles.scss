@@ -1,0 +1,128 @@
+// Import Bootstrap 5 and Bootstrap Icons
+@import "bootstrap/scss/bootstrap";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+// Enterprise Admin Dashboard Styling (No AI Neon / Glassmorphism)
+:root {
+  --app-sidebar-width: 250px;
+  --app-bg: #f8f9fa;
+  --app-card-border: #e9ecef;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--app-bg);
+  color: #212529;
+  font-size: 0.875rem;
+}
+
+// Enterprise Header
+.navbar-portal {
+  background-color: #1a222d !important;
+  border-bottom: 1px solid #2d3748;
+}
+
+.brand-icon {
+  width: 32px;
+  height: 32px;
+  background: #0d6efd;
+  color: white;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+// Classic Sidebar
+.sidebar-portal {
+  width: var(--app-sidebar-width);
+  min-height: calc(100vh - 56px);
+  background-color: #ffffff;
+  border-right: 1px solid #dee2e6;
+}
+
+.sidebar-portal .nav-link {
+  color: #495057;
+  font-weight: 500;
+  padding: 0.65rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.15s ease-in-out;
+}
+
+.sidebar-portal .nav-link:hover {
+  background-color: #f1f3f5;
+  color: #0d6efd;
+}
+
+.sidebar-portal .nav-link.active {
+  background-color: #e7f1ff;
+  color: #0d6efd;
+  font-weight: 600;
+}
+
+// Crisp Enterprise Cards
+.card-portal {
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.25rem;
+}
+
+.card-portal .card-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e9ecef;
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+}
+
+// Metric Stat Boxes
+.metric-box {
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.metric-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #6c757d;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.metric-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #212529;
+  margin-top: 0.25rem;
+}
+
+// Terminal & Log Viewer
+.terminal-window {
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+// Table Polish
+.table th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6c757d;
+  font-weight: 600;
+  background-color: #f8f9fa;
+  border-top: none;
+}
