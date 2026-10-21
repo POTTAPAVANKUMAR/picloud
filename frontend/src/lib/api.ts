@@ -11,7 +11,7 @@ import {
   SystemdService
 } from "./types";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005/api";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "/api";
 
 // Fallback Mock Data in case backend is offline
 const MOCK_STATS: SystemTelemetry = {
