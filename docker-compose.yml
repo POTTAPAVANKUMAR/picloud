@@ -13,8 +13,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /etc/cloudflared:/etc/cloudflared:ro
       - /home/pavankumarpotta/.cloudflared:/home/pavankumarpotta/.cloudflared:rw
+      - /sys:/sys:ro
     environment:
-      - EXEC_MODE=auto
+      - EXEC_MODE=local
       - PORT=5005
       - PG_CONTAINER=picloud-db
       - PG_USER=picloud

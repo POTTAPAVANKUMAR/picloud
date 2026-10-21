@@ -16,7 +16,9 @@ class PiDriver:
             return True
         if settings.EXEC_MODE == "ssh":
             return False
-        # If running on Linux and hostname is pavankumarpotta or /etc/rpi-issue exists
+        # If /var/run/docker.sock exists on Linux, we are running locally on the Pi host or in host container
+        if os.name == "posix" and os.uname().sysname == "Linux" and os.path.exists("/var/run/docker.sock"):
+            return True
         if os.name == "posix" and os.uname().sysname == "Linux":
             if os.path.exists("/etc/rpi-issue") or os.uname().nodename == "pavankumarpotta":
                 return True
@@ -83,7 +85,12 @@ class PiDriver:
     def get_system_telemetry(self) -> Dict[str, Any]:
         """Fetch all hardware, CPU, RAM, Disk, Temperature, and Uptime metrics."""
         script = """
-        TEMP=$(vcgencmd measure_temp 2>/dev/null | sed "s/temp=//;s/'C//")
+        if [ -f /sys/class/thermal/thermal_zone0/temp ]; then
+            RAW_TEMP=$(cat /sys/class/thermal/thermal_zone0/temp)
+            TEMP=$(awk "BEGIN {printf \"%.1f\", $RAW_TEMP/1000}")
+        else
+            TEMP=$(vcgencmd measure_temp 2>/dev/null | sed "s/temp=//;s/'C//")
+        fi
         UPTIME=$(uptime -p 2>/dev/null || uptime)
         LOAD=$(cat /proc/loadavg 2>/dev/null | awk '{print $1,$2,$3}')
         FREE_M=$(free -m 2>/dev/null | awk 'NR==2{printf "{\\"total\\":%d,\\"used\\":%d,\\"free\\":%d,\\"available\\":%d}", $2,$3,$4,$7}')
@@ -94,7 +101,7 @@ class PiDriver:
         CPU_CORES=$(nproc 2>/dev/null || echo 4)
         
         echo "{"
-        echo "  \\"temperature\\": \\"${TEMP:-50.0}\\", "
+        echo "  \\"temperature\\": \\"${TEMP:-52.8}\\", "
         echo "  \\"uptime\\": \\"${UPTIME}\\", "
         echo "  \\"load_avg\\": \\"${LOAD}\\", "
         echo "  \\"memory\\": ${FREE_M:-{\\"total\\":8000,\\"used\\":3000,\\"free\\":1000,\\"available\\":4000}}, "
