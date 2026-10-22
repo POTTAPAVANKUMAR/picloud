@@ -591,7 +591,7 @@ class PiDriver:
     # ---------------- Docker Compose Stacks ----------------
     def list_compose_stacks(self) -> List[Dict[str, Any]]:
         """Find and inspect known Docker Compose stacks."""
-        find_res = self.execute("find ~ -maxdepth 3 -name 'docker-compose.yml' -o -name 'docker-compose.yaml' 2>/dev/null")
+        find_res = self.execute("find /home/pavankumarpotta -maxdepth 3 -name 'docker-compose.yml' -o -name 'docker-compose.yaml' 2>/dev/null")
         paths = [p.strip() for p in find_res["stdout"].splitlines() if p.strip()]
         
         stacks = []
@@ -601,12 +601,13 @@ class PiDriver:
             ps_res = self.execute(f"docker compose -f '{path}' ps --format json")
             services = []
             if ps_res["success"] and ps_res["stdout"].strip():
-                try:
-                    for line in ps_res["stdout"].strip().splitlines():
-                        if line.strip():
-                            services.append(json.loads(line))
-                except Exception:
-                    pass
+                for line in ps_res["stdout"].strip().splitlines():
+                    line_str = line.strip()
+                    if line_str.startswith("{") and line_str.endswith("}"):
+                        try:
+                            services.append(json.loads(line_str))
+                        except Exception:
+                            pass
 
             stacks.append({
                 "name": dir_name,
