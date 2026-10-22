@@ -591,7 +591,7 @@ class PiDriver:
     # ---------------- Docker Compose Stacks ----------------
     def list_compose_stacks(self) -> List[Dict[str, Any]]:
         """Find and inspect known Docker Compose stacks."""
-        find_res = self.execute("find /home/pavankumarpotta -maxdepth 3 -name 'docker-compose.yml' -o -name 'docker-compose.yaml' 2>/dev/null")
+        find_res = self.execute("find /home/pavankumarpotta -maxdepth 3 \\( -name 'docker-compose*.yml' -o -name 'docker-compose*.yaml' \\) 2>/dev/null")
         paths = [p.strip() for p in find_res["stdout"].splitlines() if p.strip()]
         
         stacks = []
