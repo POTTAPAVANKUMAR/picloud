@@ -152,4 +152,86 @@ export class ApiService {
       { command, timeout }
     );
   }
+
+  // ---------------- Extended Cloud Modules ----------------
+
+  // Cron & Scheduled Tasks
+  getCronJobs(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/cron`);
+  }
+
+  addCronJob(schedule: string, command: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/cron`, { schedule, command });
+  }
+
+  deleteCronJob(raw_line: string): Observable<any> {
+    return this.http.request<any>('delete', `${this.baseUrl}/cron`, { body: { raw_line } });
+  }
+
+  runCronJob(command: string): Observable<{ stdout: string; stderr: string; exit_code: number; success: boolean }> {
+    return this.http.post<{ stdout: string; stderr: string; exit_code: number; success: boolean }>(
+      `${this.baseUrl}/cron/run`,
+      { command }
+    );
+  }
+
+  // Hardware Telemetry & Throttling
+  getHardwareDiagnostics(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/hardware/diagnostics`);
+  }
+
+  // Docker Compose Stacks
+  getComposeStacks(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/compose/stacks`);
+  }
+
+  getComposeFile(path: string): Observable<{ path: string; content: string; success: boolean }> {
+    return this.http.get<{ path: string; content: string; success: boolean }>(`${this.baseUrl}/compose/file?path=${encodeURIComponent(path)}`);
+  }
+
+  saveComposeFile(path: string, content: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/compose/file`, { path, content });
+  }
+
+  controlComposeStack(path: string, action: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/compose/action`, { path, action });
+  }
+
+  // Cloud File Explorer & Editor
+  listDirectory(path: string = '/home/pavankumarpotta'): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/files/list?path=${encodeURIComponent(path)}`);
+  }
+
+  readFile(path: string): Observable<{ path: string; content: string; success: boolean }> {
+    return this.http.get<{ path: string; content: string; success: boolean }>(`${this.baseUrl}/files/read?path=${encodeURIComponent(path)}`);
+  }
+
+  saveFile(path: string, content: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/files/save`, { path, content });
+  }
+
+  deleteFileItem(path: string): Observable<any> {
+    return this.http.request<any>('delete', `${this.baseUrl}/files/delete`, { body: { path } });
+  }
+
+  createFileItem(path: string, is_dir: boolean = false): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/files/create`, { path, is_dir });
+  }
+
+  // Network Diagnostics
+  pingHost(host: string, count: number = 4): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/diagnostics/ping`, { host, count });
+  }
+
+  dnsLookup(domain: string, record_type: string = 'A'): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/diagnostics/dns`, { domain, record_type });
+  }
+
+  curlTest(url: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/diagnostics/curl`, { url });
+  }
+
+  getNetworkInfo(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/diagnostics/network-info`);
+  }
 }

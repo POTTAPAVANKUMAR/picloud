@@ -139,3 +139,87 @@ export interface DeployAppRequest {
   restart_policy?: string;
   subdomain?: string;
 }
+
+// ---------------- New Extended Cloud Capabilities ----------------
+export interface CronJob {
+  id: number;
+  schedule: string;
+  command: string;
+  raw: string;
+}
+
+export interface ThrottlingFlags {
+  hex: string;
+  under_voltage_now: boolean;
+  arm_freq_capped_now: boolean;
+  currently_throttled: boolean;
+  soft_temp_limit_now: boolean;
+  under_voltage_past: boolean;
+  arm_freq_capped_past: boolean;
+  throttled_past: boolean;
+  soft_temp_limit_past: boolean;
+  healthy: boolean;
+}
+
+export interface HardwareDiagnostics {
+  throttling: ThrottlingFlags;
+  arm_clock_mhz: number;
+  core_volts: string;
+  scaling_governor: string;
+  eeprom_status: string;
+}
+
+export interface ComposeStack {
+  name: string;
+  path: string;
+  directory: string;
+  services: any[];
+  service_count: number;
+  status: string;
+}
+
+export interface FileItem {
+  name: string;
+  path: string;
+  is_dir: boolean;
+  size: number;
+  modified: string;
+  mode: string;
+}
+
+export interface DirectoryListing {
+  path: string;
+  items: FileItem[];
+  success: boolean;
+  error?: string;
+}
+
+export interface PingResult {
+  host: string;
+  output: string;
+  success: boolean;
+}
+
+export interface DnsResult {
+  domain: string;
+  record_type: string;
+  output: string;
+  success: boolean;
+}
+
+export interface CurlTestResult {
+  url: string;
+  status_code?: string;
+  dns_lookup_s?: string;
+  connect_time_s?: string;
+  ttfb_s?: string;
+  total_time_s?: string;
+  success: boolean;
+  error?: string;
+}
+
+export interface NetworkInfo {
+  interfaces: string;
+  default_gateway: string;
+  public_ip: string;
+}

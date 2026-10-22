@@ -14,11 +14,20 @@ import {
   ListeningPort,
   StorageInfo,
   SystemdService,
-  DeployAppRequest
+  DeployAppRequest,
+  CronJob,
+  HardwareDiagnostics,
+  ComposeStack,
+  FileItem,
+  DirectoryListing,
+  PingResult,
+  DnsResult,
+  CurlTestResult,
+  NetworkInfo
 } from './models/types';
 import { Subscription, interval, switchMap } from 'rxjs';
 
-export type NavTab = 'home' | 'dashboard' | 'apps' | 'sql' | 'networking' | 'storage' | 'monitoring' | 'shell';
+export type NavTab = 'home' | 'dashboard' | 'apps' | 'sql' | 'networking' | 'storage' | 'monitoring' | 'compose' | 'cron' | 'files' | 'hardware' | 'diagnostics' | 'shell';
 
 @Component({
   selector: 'app-root',
@@ -53,6 +62,47 @@ export class AppComponent implements OnInit, OnDestroy {
   ports: ListeningPort[] = [];
   storage: StorageInfo | null = null;
   services: SystemdService[] = [];
+
+  // Extended Modules Data
+  cronJobs: CronJob[] = [];
+  newCronSchedule = '0 3 * * *';
+  newCronCommand = '';
+  isAddingCron = false;
+  cronRunOutput: any = null;
+  isRunningCron = false;
+
+  hwDiagnostics: HardwareDiagnostics | null = null;
+  isLoadingHw = false;
+
+  composeStacks: ComposeStack[] = [];
+  activeComposePath = '';
+  activeComposeContent = '';
+  isViewingComposeFile = false;
+  isSavingCompose = false;
+  composeActionMsg = '';
+
+  currentDirPath = '/home/pavankumarpotta';
+  fileItems: FileItem[] = [];
+  isLoadingFiles = false;
+  editingFilePath = '';
+  editingFileContent = '';
+  isEditorOpen = false;
+  isSavingFile = false;
+  newItemName = '';
+  isNewItemFolder = false;
+  isCreatingItem = false;
+
+  pingTarget = '1.1.1.1';
+  pingResult: any = null;
+  isPinging = false;
+  dnsDomain = 'pottapk.win';
+  dnsType = 'A';
+  dnsResult: any = null;
+  isQueryingDns = false;
+  curlUrl = 'https://portal.pottapk.win';
+  curlResult: any = null;
+  isCurling = false;
+  networkInfo: any = null;
 
   // Polling
   refreshIntervalMs = 5000;
@@ -249,6 +299,250 @@ export class AppComponent implements OnInit, OnDestroy {
       error: () => {
         if (showSpinner) this.isRefreshing = false;
       }
+    });
+
+    this.loadCronJobs();
+    this.loadHardwareDiagnostics();
+    this.loadComposeStacks();
+    this.loadDirectory(this.currentDirPath);
+    this.loadNetworkInfo();
+  }
+
+  // ---------------- Extended Modules Handlers ----------------
+
+  // Cron
+  loadCronJobs(): void {
+    this.api.getCronJobs().subscribe({
+      next: (jobs) => (this.cronJobs = jobs),
+      error: () => {}
+    });
+  }
+
+  submitNewCron(): void {
+    if (!this.newCronSchedule.trim() || !this.newCronCommand.trim()) return;
+    this.api.addCronJob(this.newCronSchedule, this.newCronCommand).subscribe({
+      next: () => {
+        this.isAddingCron = false;
+        this.newCronCommand = '';
+        this.loadCronJobs();
+      },
+      error: (err) => alert(`Failed to add cron: ${err.message}`)
+    });
+  }
+
+  deleteCron(job: CronJob): void {
+    if (!confirm(`Delete cron job: ${job.schedule} ${job.command}?`)) return;
+    this.api.deleteCronJob(job.raw).subscribe({
+      next: () => this.loadCronJobs(),
+      error: (err) => alert(`Failed to delete cron: ${err.message}`)
+    });
+  }
+
+  testRunCron(cmd: string): void {
+    this.isRunningCron = true;
+    this.cronRunOutput = null;
+    this.api.runCronJob(cmd).subscribe({
+      next: (res) => {
+        this.cronRunOutput = res;
+        this.isRunningCron = false;
+      },
+      error: (err) => {
+        this.cronRunOutput = { stderr: err.message, success: false };
+        this.isRunningCron = false;
+      }
+    });
+  }
+
+  // Hardware Diagnostics
+  loadHardwareDiagnostics(): void {
+    this.isLoadingHw = true;
+    this.api.getHardwareDiagnostics().subscribe({
+      next: (data) => {
+        this.hwDiagnostics = data;
+        this.isLoadingHw = false;
+      },
+      error: () => (this.isLoadingHw = false)
+    });
+  }
+
+  // Docker Compose Stacks
+  loadComposeStacks(): void {
+    this.api.getComposeStacks().subscribe({
+      next: (stacks) => (this.composeStacks = stacks),
+      error: () => {}
+    });
+  }
+
+  viewComposeFile(path: string): void {
+    this.activeComposePath = path;
+    this.api.getComposeFile(path).subscribe({
+      next: (res) => {
+        this.activeComposeContent = res.content;
+        this.isViewingComposeFile = true;
+      },
+      error: (err) => alert(`Failed to read compose file: ${err.message}`)
+    });
+  }
+
+  saveComposeFile(): void {
+    if (!this.activeComposePath) return;
+    this.isSavingCompose = true;
+    this.api.saveComposeFile(this.activeComposePath, this.activeComposeContent).subscribe({
+      next: () => {
+        this.isSavingCompose = false;
+        this.isViewingComposeFile = false;
+        this.loadComposeStacks();
+        alert('Compose file saved successfully!');
+      },
+      error: (err) => {
+        this.isSavingCompose = false;
+        alert(`Failed to save compose: ${err.message}`);
+      }
+    });
+  }
+
+  controlCompose(path: string, action: string): void {
+    if (action === 'down' && !confirm(`Stop and remove containers for this stack?`)) return;
+    this.composeActionMsg = `Executing 'docker compose ${action}'...`;
+    this.api.controlComposeStack(path, action).subscribe({
+      next: (res) => {
+        this.composeActionMsg = `Stack ${action} completed: ${res.stdout || res.stderr || 'Success'}`;
+        setTimeout(() => (this.composeActionMsg = ''), 5000);
+        this.loadComposeStacks();
+        this.loadAllData(false);
+      },
+      error: (err) => {
+        this.composeActionMsg = `Action failed: ${err.message}`;
+      }
+    });
+  }
+
+  // File Explorer & Editor
+  loadDirectory(path: string): void {
+    this.isLoadingFiles = true;
+    this.currentDirPath = path;
+    this.api.listDirectory(path).subscribe({
+      next: (res) => {
+        this.fileItems = res.items || [];
+        this.isLoadingFiles = false;
+      },
+      error: (err) => {
+        this.isLoadingFiles = false;
+        alert(`Failed to list directory: ${err.message}`);
+      }
+    });
+  }
+
+  navigateUpDir(): void {
+    const parent = this.currentDirPath.substring(0, this.currentDirPath.lastIndexOf('/')) || '/';
+    this.loadDirectory(parent);
+  }
+
+  openFileEditor(item: FileItem): void {
+    if (item.is_dir) {
+      this.loadDirectory(item.path);
+      return;
+    }
+    this.editingFilePath = item.path;
+    this.api.readFile(item.path).subscribe({
+      next: (res) => {
+        this.editingFileContent = res.content;
+        this.isEditorOpen = true;
+      },
+      error: (err) => alert(`Cannot open file: ${err.message}`)
+    });
+  }
+
+  saveCurrentFile(): void {
+    this.isSavingFile = true;
+    this.api.saveFile(this.editingFilePath, this.editingFileContent).subscribe({
+      next: () => {
+        this.isSavingFile = false;
+        this.isEditorOpen = false;
+        this.loadDirectory(this.currentDirPath);
+        alert('File saved successfully!');
+      },
+      error: (err) => {
+        this.isSavingFile = false;
+        alert(`Failed to save file: ${err.message}`);
+      }
+    });
+  }
+
+  deleteFile(item: FileItem): void {
+    if (!confirm(`Delete ${item.is_dir ? 'folder' : 'file'}: ${item.name}?`)) return;
+    this.api.deleteFileItem(item.path).subscribe({
+      next: () => this.loadDirectory(this.currentDirPath),
+      error: (err) => alert(`Failed to delete: ${err.message}`)
+    });
+  }
+
+  createNewItem(): void {
+    if (!this.newItemName.trim()) return;
+    const fullPath = `${this.currentDirPath.replace(/\/$/, '')}/${this.newItemName.trim()}`;
+    this.api.createFileItem(fullPath, this.isNewItemFolder).subscribe({
+      next: () => {
+        this.isCreatingItem = false;
+        this.newItemName = '';
+        this.loadDirectory(this.currentDirPath);
+      },
+      error: (err) => alert(`Creation failed: ${err.message}`)
+    });
+  }
+
+  // Network Diagnostics
+  runPing(): void {
+    if (!this.pingTarget.trim()) return;
+    this.isPinging = true;
+    this.pingResult = null;
+    this.api.pingHost(this.pingTarget).subscribe({
+      next: (res) => {
+        this.pingResult = res;
+        this.isPinging = false;
+      },
+      error: (err) => {
+        this.pingResult = { output: err.message, success: false };
+        this.isPinging = false;
+      }
+    });
+  }
+
+  runDns(): void {
+    if (!this.dnsDomain.trim()) return;
+    this.isQueryingDns = true;
+    this.dnsResult = null;
+    this.api.dnsLookup(this.dnsDomain, this.dnsType).subscribe({
+      next: (res) => {
+        this.dnsResult = res;
+        this.isQueryingDns = false;
+      },
+      error: (err) => {
+        this.dnsResult = { output: err.message, success: false };
+        this.isQueryingDns = false;
+      }
+    });
+  }
+
+  runCurl(): void {
+    if (!this.curlUrl.trim()) return;
+    this.isCurling = true;
+    this.curlResult = null;
+    this.api.curlTest(this.curlUrl).subscribe({
+      next: (res) => {
+        this.curlResult = res;
+        this.isCurling = false;
+      },
+      error: (err) => {
+        this.curlResult = { error: err.message, success: false };
+        this.isCurling = false;
+      }
+    });
+  }
+
+  loadNetworkInfo(): void {
+    this.api.getNetworkInfo().subscribe({
+      next: (data) => (this.networkInfo = data),
+      error: () => {}
     });
   }
 

@@ -1,15 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import system, apps, sql, networking, storage, terminal
+from routers import system, apps, sql, networking, storage, terminal, cron, hardware, compose, files, diagnostics
 from config import settings
 
 app = FastAPI(
-    title="PiCloud Management Console API",
+    title="Potta Cloud Console API",
     description="Enterprise-grade control plane API for Raspberry Pi - Private Edge Cloud",
-    version="1.0.0"
+    version="2.0.0"
 )
 
-# Enable CORS for Next.js frontend
+# Enable CORS for Angular frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -25,6 +25,11 @@ app.include_router(sql.router)
 app.include_router(networking.router)
 app.include_router(storage.router)
 app.include_router(terminal.router)
+app.include_router(cron.router)
+app.include_router(hardware.router)
+app.include_router(compose.router)
+app.include_router(files.router)
+app.include_router(diagnostics.router)
 
 @app.get("/")
 def health_check():
