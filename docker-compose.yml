@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile
     container_name: picloud-portal-backend
     restart: unless-stopped
+    privileged: true
+    pid: "host"
     ports:
       - "5005:5005"
     volumes:

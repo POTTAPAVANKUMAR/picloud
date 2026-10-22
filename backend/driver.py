@@ -2,6 +2,7 @@ import os
 import json
 import subprocess
 import yaml
+import shlex
 from typing import Dict, Any, List, Optional
 from config import settings
 
@@ -25,16 +26,29 @@ class PiDriver:
         return False
 
     def execute(self, cmd: str, timeout: int = 20) -> Dict[str, Any]:
-        """Execute a shell command either locally or via SSH."""
+        """Execute a shell command either locally (using nsenter on host if privileged) or via SSH."""
         try:
             if self.is_local:
+                exec_cmd = cmd
+                if os.path.exists("/usr/bin/nsenter"):
+                    exec_cmd = f"nsenter -t 1 -m -u -i -n -p sh -c {shlex.quote(cmd)}"
+                
                 proc = subprocess.run(
-                    cmd,
+                    exec_cmd,
                     shell=True,
                     capture_output=True,
                     text=True,
                     timeout=timeout
                 )
+                # If nsenter fails due to permissions, fallback to running directly in container
+                if proc.returncode != 0 and "nsenter:" in proc.stderr:
+                    proc = subprocess.run(
+                        cmd,
+                        shell=True,
+                        capture_output=True,
+                        text=True,
+                        timeout=timeout
+                    )
                 return {
                     "stdout": proc.stdout,
                     "stderr": proc.stderr,
@@ -470,7 +484,7 @@ class PiDriver:
     # ---------------- Cron & Scheduled Tasks ----------------
     def get_cron_jobs(self) -> List[Dict[str, Any]]:
         """List current user crontab jobs."""
-        res = self.execute("crontab -l")
+        res = self.execute("crontab -u pavankumarpotta -l 2>/dev/null || crontab -l")
         if not res["success"] and "no crontab for" in res["stderr"].lower():
             return []
         
@@ -495,19 +509,18 @@ class PiDriver:
     def add_cron_job(self, schedule: str, command: str) -> Dict[str, Any]:
         """Append a new cron job."""
         new_job = f"{schedule.strip()} {command.strip()}"
-        res = self.execute("crontab -l")
+        res = self.execute("crontab -u pavankumarpotta -l 2>/dev/null || crontab -l")
         existing = res["stdout"] if res["success"] else ""
         updated = existing.rstrip() + "\n" + new_job + "\n"
         # Safely write crontab
-        import tempfile
         tmp = f"/tmp/crontab_{os.getpid()}"
         self.execute(f"cat << 'EOF' > {tmp}\n{updated}\nEOF")
-        apply_res = self.execute(f"crontab {tmp} && rm -f {tmp}")
+        apply_res = self.execute(f"crontab -u pavankumarpotta {tmp} 2>/dev/null || crontab {tmp}; rm -f {tmp}")
         return apply_res
 
     def delete_cron_job(self, raw_line: str) -> Dict[str, Any]:
         """Delete a cron job matching the raw line."""
-        res = self.execute("crontab -l")
+        res = self.execute("crontab -u pavankumarpotta -l 2>/dev/null || crontab -l")
         if not res["success"]:
             return {"success": False, "error": "Cannot read crontab"}
         lines = res["stdout"].splitlines()
@@ -515,7 +528,7 @@ class PiDriver:
         updated = "\n".join(new_lines) + "\n"
         tmp = f"/tmp/crontab_del_{os.getpid()}"
         self.execute(f"cat << 'EOF' > {tmp}\n{updated}\nEOF")
-        apply_res = self.execute(f"crontab {tmp} && rm -f {tmp}")
+        apply_res = self.execute(f"crontab -u pavankumarpotta {tmp} 2>/dev/null || crontab {tmp}; rm -f {tmp}")
         return apply_res
 
     def run_cron_job(self, command: str) -> Dict[str, Any]:
