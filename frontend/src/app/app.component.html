@@ -9,14 +9,14 @@
     </button>
 
     <div class="d-flex align-items-center gap-2 cursor-pointer" (click)="setTab('home')">
-      <!-- Official Microsoft Azure Folded Cloud SVG Logo -->
+      <!-- Cloud Logo -->
       <svg class="azure-logo" width="22" height="22" viewBox="0 0 96 96" fill="none">
         <path d="M57.6 12L31.2 57.6H7.2L36 12H57.6Z" fill="#0078D4"/>
         <path d="M59.4 12L38.4 57.6L52.8 84H88.8L59.4 12Z" fill="#50E6FF"/>
         <path d="M38.4 57.6L52.8 84H24L7.2 57.6H38.4Z" fill="#0078D4"/>
         <path d="M57.6 12H88.8L52.8 84L38.4 57.6L57.6 12Z" fill="#005A9E"/>
       </svg>
-      <span class="azure-portal-title fw-bold">Microsoft Azure</span>
+      <span class="azure-portal-title fw-bold">Potta Cloud</span>
       <span class="azure-tenant-badge d-none d-sm-inline">pottapk.win</span>
     </div>
   </div>
@@ -163,7 +163,7 @@
       <div class="azure-breadcrumb d-flex align-items-center">
         <a href="javascript:void(0)" (click)="setTab('home')">Home</a>
         <span class="separator">›</span>
-        <span class="current" *ngIf="activeTab === 'home'">Azure Services</span>
+        <span class="current" *ngIf="activeTab === 'home'">Potta Cloud Services</span>
         <span class="current" *ngIf="activeTab === 'dashboard'">Dashboard (Hardware Telemetry)</span>
         <span class="current" *ngIf="activeTab === 'apps'">App Services</span>
         <span class="current" *ngIf="activeTab === 'sql'">SQL databases (picloud-db)</span>
@@ -190,7 +190,7 @@
     <!-- =================================================================== -->
     <div class="p-3 flex-grow-1" *ngIf="activeTab === 'home'">
       <!-- Heading -->
-      <h5 class="fw-bold mb-3">Azure services</h5>
+      <h5 class="fw-bold mb-3">Potta Cloud Services</h5>
 
       <!-- Top Row: Azure Service Icons Grid -->
       <div class="row g-2 mb-4">

@@ -28,7 +28,7 @@ export type NavTab = 'home' | 'dashboard' | 'apps' | 'sql' | 'networking' | 'sto
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'Microsoft Azure - PiCloud Portal';
+  title = 'Potta Cloud';
   activeTab: NavTab = 'home';
 
   // Azure Theme System (Dark Mode & Light Mode)
