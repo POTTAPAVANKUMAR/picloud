@@ -1,6 +1,8 @@
-# ☁️ PiCloud Management Console
+# ☁️ Potta Cloud Management Console
 
-An enterprise-grade, private edge cloud control plane for your Raspberry Pi (`192.168.1.151` / `pottapk.win`), modeled after **Azure Portal**, **AWS Management Console**, and **Google Cloud Platform (GCP)**.
+An enterprise-grade, private edge cloud control plane for your Raspberry Pi 5 (`192.168.1.151` / `pottapk.win`), modeled after **Microsoft Azure Portal**, **AWS Management Console**, and **Google Cloud Platform (GCP)**.
+
+Built with **Angular 17**, **Bootstrap 5.3**, and **Python FastAPI**, featuring native **Dark Mode** and **Light Mode**.
 
 ---
 
@@ -8,7 +10,7 @@ An enterprise-grade, private edge cloud control plane for your Raspberry Pi (`19
 
 ### 1. 🚀 App Services (Compute & Containers)
 * **One-Click Deployments**: Deploy apps using pre-configured templates (Next.js, Python FastAPI, Go microservices, Nginx static, Node.js) or any custom Docker image.
-* **Service Management**: Start, stop, restart, inspect, and delete containers in real-time.
+* **Service Lifecycle**: Start, stop, restart, inspect, and delete containers in real-time.
 * **Live Telemetry & Logs**: Stream stdout/stderr container logs with regex filtering, auto-scroll, and export.
 * **In-Container Execution**: Execute arbitrary commands directly inside running containers (`docker exec`).
 * **Instant Ingress Binding**: Automatically bind new deployments to public Cloudflare subdomains (`app.pottapk.win`).
@@ -17,13 +19,13 @@ An enterprise-grade, private edge cloud control plane for your Raspberry Pi (`19
 * **PostgreSQL Engine Explorer**: Discover containerized PostgreSQL (`picloud-db`) instances and active client connections.
 * **Interactive SQL Studio**: Run queries (`SELECT`, `INSERT`, `UPDATE`, DDL) directly from your browser with query timing metrics.
 * **Connection String Hub**: Instant pre-formatted connection strings with copy-to-clipboard for Node.js (`pg`), Python (`asyncpg`/`SQLAlchemy`), CLI (`psql`), Prisma ORM, and .NET.
-* **Automated Snapshots**: Trigger 1-click `pg_dump` backups.
-* **Single Sign-On Link**: Launch Adminer/pgAdmin web console (`postgresql.pottapk.win`).
+* **Automated Snapshots**: Trigger 1-click `pg_dump` backups saved to Pi NVMe storage.
+* **Web GUI Integration**: Direct link to Adminer/pgAdmin web console (`postgresql.pottapk.win`).
 
 ### 3. 🌐 Virtual Network & Ingress Routing
 * **Cloudflare Tunnel Ingress Manager**: View, add, and remove routing rules directly in `/etc/cloudflared/config.yml` with automated YAML syntax validation and zero-downtime service reload.
-* **Port Radar & Conflict Inspector**: Visual scan of all open & listening TCP ports on the Pi (`lsof -iTCP -sTCP:LISTEN -P -n`), mapping each port to its PID, host user, and Docker container.
-* **Process Terminator**: Terminate rogue or orphaned processes holding ports.
+* **Port Radar & Conflict Inspector**: Visual scan of all open & listening TCP ports on the Pi (`ss -tulpn`), mapping each port to its PID, host user, and Docker container.
+* **Process Terminator**: Terminate rogue or orphaned processes holding ports directly from the UI.
 * **Edge Health Checker**: Dynamically test external HTTPS availability across all registered subdomains.
 
 ### 4. 💾 Disks & Persistent Storage
@@ -46,7 +48,7 @@ An enterprise-grade, private edge cloud control plane for your Raspberry Pi (`19
 ## 🛠️ Project Structure
 
 ```
-picloud-portal/
+picloud/
 ├── backend/
 │   ├── config.py                 # Configuration & environment variables
 │   ├── driver.py                 # Hardware, Docker, PostgreSQL & SSH execution engine
@@ -62,11 +64,12 @@ picloud-portal/
 │       └── terminal.py           # Pi Cloud Shell execution
 ├── frontend/
 │   ├── src/
-│   │   ├── app/                  # Next.js 16 app router
-│   │   ├── components/           # UI components (Header, Sidebar, Search, Deploy, Shell, Logs)
-│   │   │   └── views/            # Dashboard, Apps, SQL, Networking, Storage, Monitoring
-│   │   └── lib/                  # TypeScript interfaces & API client
+│   │   ├── app/                  # Angular 17 standalone components
+│   │   │   ├── models/           # TypeScript interfaces & API models
+│   │   │   └── services/         # Angular HttpClient API service
+│   │   └── styles.scss           # Azure Portal Dark & Light theme system
 │   ├── package.json
+│   ├── nginx.conf                # Nginx SPA proxy & static asset server
 │   └── Dockerfile
 ├── docker-compose.yml            # Multi-container production deployment
 ├── dev.sh                        # 1-Click local development script
@@ -77,16 +80,14 @@ picloud-portal/
 
 ## 🚀 Getting Started
 
-### Local Development (Connects to Raspberry Pi via SSH)
+### Local Development
 ```bash
-cd /Users/pavankumarpotta/Workspace/picloud-portal
 ./dev.sh
 ```
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Deploy to Raspberry Pi
 ```bash
-cd /Users/pavankumarpotta/Workspace/picloud-portal
 ./deploy-to-pi.sh
 ```
-Once deployed, open `http://192.168.1.151:3005` or route through Cloudflare tunnel to `https://console.pottapk.win`.
+Live URL: **https://portal.pottapk.win** (or `http://192.168.1.151:3005`).
