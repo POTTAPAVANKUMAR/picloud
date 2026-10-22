@@ -1,494 +1,706 @@
-<!-- Top Enterprise Cloud Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark navbar-portal sticky-top px-3 py-2 shadow-sm">
-  <div class="container-fluid px-0 d-flex align-items-center justify-content-between">
-    <!-- Brand -->
-    <div class="d-flex align-items-center gap-2">
-      <div class="brand-icon shadow-sm">
-        <i class="bi bi-cloud-check-fill"></i>
-      </div>
-      <div>
-        <div class="d-flex align-items-center gap-2">
-          <span class="navbar-brand fw-bold fs-6 mb-0 text-white p-0">PiCloud</span>
-          <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace" style="font-size: 0.65rem;">
-            CONSOLE
-          </span>
-        </div>
-        <div class="text-secondary font-monospace" style="font-size: 0.7rem; line-height: 1;">
-          pottapk.win • 192.168.1.151 • aarch64
-        </div>
-      </div>
+<!-- ============================================================================= -->
+<!-- MICROSOFT AZURE GLOBAL HEADER                                                -->
+<!-- ============================================================================= -->
+<header class="azure-header d-flex align-items-center justify-content-between px-3 sticky-top">
+  <!-- Left: Hamburger + Azure Logo + Portal Title -->
+  <div class="d-flex align-items-center gap-2">
+    <button class="azure-icon-btn me-1" (click)="toggleSidebar()" title="Toggle navigation menu">
+      <i class="bi bi-list fs-5"></i>
+    </button>
+
+    <div class="d-flex align-items-center gap-2 cursor-pointer" (click)="setTab('home')">
+      <!-- Official Microsoft Azure Folded Cloud SVG Logo -->
+      <svg class="azure-logo" width="22" height="22" viewBox="0 0 96 96" fill="none">
+        <path d="M57.6 12L31.2 57.6H7.2L36 12H57.6Z" fill="#0078D4"/>
+        <path d="M59.4 12L38.4 57.6L52.8 84H88.8L59.4 12Z" fill="#50E6FF"/>
+        <path d="M38.4 57.6L52.8 84H24L7.2 57.6H38.4Z" fill="#0078D4"/>
+        <path d="M57.6 12H88.8L52.8 84L38.4 57.6L57.6 12Z" fill="#005A9E"/>
+      </svg>
+      <span class="azure-portal-title fw-bold">Microsoft Azure</span>
+      <span class="azure-tenant-badge d-none d-sm-inline">pottapk.win</span>
     </div>
+  </div>
 
-    <!-- Center Search -->
-    <div class="d-none d-md-flex align-items-center" style="width: 320px;">
-      <div class="input-group input-group-sm">
-        <span class="input-group-text bg-dark border-secondary text-secondary">
-          <i class="bi bi-search"></i>
-        </span>
-        <input
-          type="text"
-          class="form-control bg-dark border-secondary text-white"
-          placeholder="Filter apps, dbs, ports..."
-          [(ngModel)]="searchQuery"
-        />
-        <button *ngIf="searchQuery" class="btn btn-outline-secondary" (click)="searchQuery = ''">
-          <i class="bi bi-x"></i>
-        </button>
-      </div>
-    </div>
+  <!-- Center: Azure Global Search Box -->
+  <div class="azure-search-container d-none d-md-flex align-items-center">
+    <i class="bi bi-search azure-search-icon"></i>
+    <input
+      type="text"
+      class="azure-search-input"
+      placeholder="Search resources, services, and docs (G+/)"
+      [(ngModel)]="searchQuery"
+    />
+    <kbd class="azure-search-kbd">Ctrl+/</kbd>
+    <button *ngIf="searchQuery" class="btn btn-sm btn-link text-muted p-0 ms-1" (click)="searchQuery = ''">
+      <i class="bi bi-x"></i>
+    </button>
+  </div>
 
-    <!-- Right Controls & Status Chips -->
-    <div class="d-flex align-items-center gap-2">
-      <!-- Status Pills -->
-      <div class="d-none d-lg-flex align-items-center gap-2 me-2">
-        <span class="badge bg-success-subtle text-success border border-success-subtle d-flex align-items-center gap-1 py-1 px-2 font-monospace">
-          <span class="spinner-grow spinner-grow-sm text-success" style="width: 6px; height: 6px;"></span>
-          ONLINE
-        </span>
+  <!-- Right: Utilities, Theme Toggle, Settings, Profile -->
+  <div class="d-flex align-items-center gap-1">
+    <!-- Cloud Shell Button -->
+    <button class="azure-utility-btn" (click)="isShellOpen = !isShellOpen" title="Cloud Shell">
+      <i class="bi bi-terminal"></i>
+      <span class="d-none d-lg-inline ms-1 small">Cloud Shell</span>
+    </button>
 
-        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle py-1 px-2 font-monospace">
-          <i class="bi bi-thermometer-half text-warning me-1"></i>
-          {{ stats?.temperature || '52.8' }}°C
-        </span>
+    <!-- Theme Toggle: Light Mode <-> Dark Mode -->
+    <button class="azure-utility-btn" (click)="toggleTheme()" [title]="'Switch to ' + (theme === 'dark' ? 'Light' : 'Dark') + ' theme'">
+      <i class="bi" [class.bi-sun-fill]="theme === 'dark'" [class.bi-moon-stars-fill]="theme === 'light'"></i>
+      <span class="d-none d-xl-inline ms-1 small">{{ theme === 'dark' ? 'Light' : 'Dark' }}</span>
+    </button>
 
-        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle py-1 px-2 font-monospace">
-          <i class="bi bi-cpu text-info me-1"></i>
-          RAM {{ stats?.memory?.percent || '44.8' }}%
-        </span>
+    <!-- Notifications Bell -->
+    <button class="azure-utility-btn position-relative" title="Notifications">
+      <i class="bi bi-bell"></i>
+      <span class="position-absolute top-0 start-100 translate-middle p-1 bg-primary rounded-circle" style="margin-top: 8px; margin-left: -8px;"></span>
+    </button>
 
-        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle py-1 px-2 font-monospace">
-          <i class="bi bi-boxes text-primary me-1"></i>
-          {{ runningAppsCount }} Running
-        </span>
-      </div>
+    <!-- Settings Gear -->
+    <button class="azure-utility-btn" (click)="isSettingsOpen = !isSettingsOpen" title="Portal settings">
+      <i class="bi bi-gear"></i>
+    </button>
 
-      <!-- Action Buttons -->
-      <button class="btn btn-primary btn-sm d-flex align-items-center gap-1 shadow-sm" (click)="openDeployModal()">
-        <i class="bi bi-plus-circle"></i>
-        <span class="d-none d-sm-inline">Deploy App</span>
-      </button>
-
-      <button class="btn btn-outline-warning btn-sm d-flex align-items-center gap-1" (click)="isShellOpen = !isShellOpen">
-        <i class="bi bi-terminal"></i>
-        <span class="d-none d-sm-inline">Cloud Shell</span>
-      </button>
-
-      <!-- Refresh Controls -->
-      <div class="btn-group btn-group-sm ms-1">
-        <select
-          class="form-select form-select-sm bg-dark border-secondary text-secondary font-monospace"
-          style="width: 105px; font-size: 0.75rem;"
-          [(ngModel)]="refreshIntervalMs"
-          (change)="onRefreshIntervalChange()"
-        >
-          <option [ngValue]="5000">Live (5s)</option>
-          <option [ngValue]="15000">15s</option>
-          <option [ngValue]="30000">30s</option>
-          <option [ngValue]="0">Paused</option>
-        </select>
-        <button
-          class="btn btn-outline-secondary"
-          (click)="loadAllData(true)"
-          [disabled]="isRefreshing"
-          title="Refresh now"
-        >
-          <i class="bi bi-arrow-clockwise" [class.d-inline-block]="isRefreshing" [class.spin]="isRefreshing"></i>
-        </button>
+    <!-- User Profile Avatar & Tenant -->
+    <div class="d-flex align-items-center gap-2 ms-2 ps-2 border-start border-secondary-subtle">
+      <div class="azure-avatar">PK</div>
+      <div class="d-none d-xxl-block text-start" style="line-height: 1.1;">
+        <div class="small fw-semibold">Pavan Kumar Potta</div>
+        <div class="azure-text-muted" style="font-size: 0.65rem;">pavankumarpotta&#64;pottapk.win</div>
       </div>
     </div>
   </div>
-</nav>
+</header>
 
-<!-- Main Container with Sidebar + Content -->
-<div class="d-flex">
-  <!-- Left Navigation Sidebar -->
-  <aside class="sidebar-portal p-3 d-flex flex-col justify-content-between shrink-0">
-    <div>
-      <div class="text-uppercase text-secondary fw-bold px-2 mb-2" style="font-size: 0.65rem; letter-spacing: 0.8px;">
-        Core Services
-      </div>
-      <div class="nav flex-column gap-1">
-        <a
-          class="nav-link cursor-pointer"
-          [class.active]="activeTab === 'dashboard'"
-          (click)="setTab('dashboard')"
-        >
-          <span><i class="bi bi-speedometer2 me-2 text-primary"></i> Dashboard</span>
-        </a>
+<!-- ============================================================================= -->
+<!-- MAIN PORTAL BODY (SIDEBAR + WORKSPACE)                                        -->
+<!-- ============================================================================= -->
+<div class="d-flex" style="min-height: calc(100vh - 48px);">
+  <!-- Azure Left Navigation Sidebar (Collapsible) -->
+  <aside class="azure-sidebar flex-shrink-0" [class.collapsed]="isSidebarCollapsed">
+    <!-- Top Navigation Section -->
+    <div class="py-2">
+      <a class="azure-nav-item" [class.active]="activeTab === 'home'" (click)="setTab('home')" title="Home">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-house-door-fill azure-service-icon home"></i>
+          <span class="sidebar-label">Home</span>
+        </div>
+      </a>
 
-        <a
-          class="nav-link cursor-pointer"
-          [class.active]="activeTab === 'apps'"
-          (click)="setTab('apps')"
-        >
-          <span><i class="bi bi-boxes me-2 text-info"></i> App Services</span>
-          <span class="badge bg-secondary font-monospace" *ngIf="apps.length">{{ apps.length }}</span>
-        </a>
-
-        <a
-          class="nav-link cursor-pointer"
-          [class.active]="activeTab === 'sql'"
-          (click)="setTab('sql')"
-        >
-          <span><i class="bi bi-database me-2 text-success"></i> SQL Databases</span>
-          <span class="badge bg-secondary font-monospace" *ngIf="databases.length">{{ databases.length }}</span>
-        </a>
-
-        <a
-          class="nav-link cursor-pointer"
-          [class.active]="activeTab === 'networking'"
-          (click)="setTab('networking')"
-        >
-          <span><i class="bi bi-globe me-2 text-primary"></i> Virtual Network</span>
-          <span class="badge bg-secondary font-monospace" *ngIf="ingressConfig?.rules?.length">{{ ingressConfig?.rules?.length }}</span>
-        </a>
-
-        <a
-          class="nav-link cursor-pointer"
-          [class.active]="activeTab === 'storage'"
-          (click)="setTab('storage')"
-        >
-          <span><i class="bi bi-hdd-network me-2 text-warning"></i> Disks & Storage</span>
-          <span class="badge bg-secondary font-monospace">1 TB</span>
-        </a>
-
-        <a
-          class="nav-link cursor-pointer"
-          [class.active]="activeTab === 'monitoring'"
-          (click)="setTab('monitoring')"
-        >
-          <span><i class="bi bi-activity me-2 text-danger"></i> Monitoring & Logs</span>
-        </a>
-
-        <a
-          class="nav-link cursor-pointer"
-          [class.active]="isShellOpen"
-          (click)="isShellOpen = !isShellOpen"
-        >
-          <span><i class="bi bi-terminal me-2 text-warning"></i> Cloud Shell</span>
-          <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Bash</span>
-        </a>
-      </div>
+      <a class="azure-nav-item" [class.active]="activeTab === 'dashboard'" (click)="setTab('dashboard')" title="Dashboard">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-grid-fill azure-service-icon app-service"></i>
+          <span class="sidebar-label">Dashboard</span>
+        </div>
+      </a>
     </div>
 
-    <!-- Cluster Bottom Card -->
-    <div class="card card-portal bg-light mt-4 p-2 text-secondary" style="font-size: 0.75rem;">
-      <div class="d-flex align-items-center justify-content-between mb-1">
-        <span class="fw-semibold text-dark"><i class="bi bi-shield-check text-success me-1"></i> Cloudflare Edge</span>
-        <span class="badge bg-success p-1 rounded-circle" style="width: 8px; height: 8px;"></span>
+    <!-- Favorites Section -->
+    <div class="sidebar-section-title">FAVORITES</div>
+    <div class="nav flex-column flex-grow-1">
+      <a class="azure-nav-item" [class.active]="activeTab === 'apps'" (click)="setTab('apps')" title="App Services">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-globe2 azure-service-icon app-service"></i>
+          <span class="sidebar-label">App Services</span>
+        </div>
+        <span class="badge bg-secondary sidebar-badge font-monospace" *ngIf="apps.length">{{ apps.length }}</span>
+      </a>
+
+      <a class="azure-nav-item" [class.active]="activeTab === 'sql'" (click)="setTab('sql')" title="SQL databases">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-database-fill azure-service-icon sql"></i>
+          <span class="sidebar-label">SQL databases</span>
+        </div>
+        <span class="badge bg-secondary sidebar-badge font-monospace" *ngIf="databases.length">{{ databases.length }}</span>
+      </a>
+
+      <a class="azure-nav-item" [class.active]="activeTab === 'networking'" (click)="setTab('networking')" title="Virtual networks">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-diagram-3-fill azure-service-icon networking"></i>
+          <span class="sidebar-label">Virtual networks</span>
+        </div>
+        <span class="badge bg-secondary sidebar-badge font-monospace" *ngIf="ingressConfig?.rules?.length">{{ ingressConfig?.rules?.length }}</span>
+      </a>
+
+      <a class="azure-nav-item" [class.active]="activeTab === 'storage'" (click)="setTab('storage')" title="Disks & Storage">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-hdd-stack-fill azure-service-icon storage"></i>
+          <span class="sidebar-label">Disks & Storage</span>
+        </div>
+        <span class="badge bg-secondary sidebar-badge font-monospace">1 TB</span>
+      </a>
+
+      <a class="azure-nav-item" [class.active]="activeTab === 'monitoring'" (click)="setTab('monitoring')" title="Monitor & Daemons">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-activity azure-service-icon monitoring"></i>
+          <span class="sidebar-label">Monitor & Health</span>
+        </div>
+      </a>
+
+      <a class="azure-nav-item" [class.active]="isShellOpen" (click)="isShellOpen = !isShellOpen" title="Cloud Shell">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-terminal-fill azure-service-icon shell"></i>
+          <span class="sidebar-label">Cloud Shell</span>
+        </div>
+        <span class="badge bg-warning-subtle text-warning sidebar-badge font-monospace">Bash</span>
+      </a>
+    </div>
+
+    <!-- Bottom Node Status Box -->
+    <div class="p-2 border-top border-secondary-subtle" *ngIf="!isSidebarCollapsed">
+      <div class="d-flex align-items-center justify-content-between small">
+        <span class="fw-semibold"><i class="bi bi-shield-check text-success me-1"></i> Pi 5 Node</span>
+        <span class="azure-status-pill running"><span class="azure-status-dot"></span> Online</span>
       </div>
-      <div class="font-monospace text-truncate">Tunnel: f49cf9d5...1c7e</div>
-      <div class="border-top mt-2 pt-1 d-flex justify-content-between">
-        <span>IP: 192.168.1.151</span>
-        <span class="text-success fw-bold">Active</span>
-      </div>
+      <div class="text-muted font-monospace" style="font-size: 0.65rem;">192.168.1.151 • 52.8°C</div>
     </div>
   </aside>
 
-  <!-- Main View Workspace -->
-  <main class="flex-grow-1 p-4" style="min-height: calc(100vh - 56px); overflow-y: auto;">
-    <div class="container-fluid px-0">
+  <!-- Workspace Container -->
+  <main class="flex-grow-1 d-flex flex-column" style="min-width: 0;">
+    <!-- Azure Breadcrumbs Bar -->
+    <div class="azure-subnav-bar d-flex align-items-center justify-content-between">
+      <div class="azure-breadcrumb d-flex align-items-center">
+        <a href="javascript:void(0)" (click)="setTab('home')">Home</a>
+        <span class="separator">›</span>
+        <span class="current" *ngIf="activeTab === 'home'">Azure Services</span>
+        <span class="current" *ngIf="activeTab === 'dashboard'">Dashboard (Hardware Telemetry)</span>
+        <span class="current" *ngIf="activeTab === 'apps'">App Services</span>
+        <span class="current" *ngIf="activeTab === 'sql'">SQL databases (picloud-db)</span>
+        <span class="current" *ngIf="activeTab === 'networking'">Virtual networks (pottapk-vnet)</span>
+        <span class="current" *ngIf="activeTab === 'storage'">Disks & Storage accounts</span>
+        <span class="current" *ngIf="activeTab === 'monitoring'">Monitor & System Daemons</span>
+      </div>
 
-      <!-- =================================================================== -->
-      <!-- TAB 1: DASHBOARD -->
-      <!-- =================================================================== -->
-      <section *ngIf="activeTab === 'dashboard'">
-        <!-- Breadcrumb & Title -->
-        <div class="d-flex align-items-center justify-content-between mb-3">
-          <div>
-            <h4 class="fw-bold mb-0 text-dark">Raspberry Pi Cloud Dashboard</h4>
-            <div class="text-muted small">Overview of compute, databases, subdomains, and host hardware</div>
-          </div>
-          <div class="d-flex gap-2">
-            <button class="btn btn-outline-secondary btn-sm" (click)="openDeployModal()">
-              <i class="bi bi-rocket-takeoff me-1"></i> Deploy App
-            </button>
-            <button class="btn btn-outline-secondary btn-sm" (click)="setTab('sql')">
-              <i class="bi bi-database me-1"></i> Query Studio
-            </button>
+      <!-- Live Polling Indicator & Manual Refresh -->
+      <div class="d-flex align-items-center gap-2">
+        <span class="azure-text-muted small font-monospace d-none d-sm-inline">
+          <i class="bi bi-arrow-repeat spin text-primary me-1" *ngIf="isRefreshing"></i>
+          {{ isRefreshing ? 'Syncing...' : 'Updated' }}
+        </span>
+        <button class="azure-toolbar-btn" (click)="loadAllData(true)" [disabled]="isRefreshing" title="Refresh">
+          <i class="bi bi-arrow-clockwise" [class.spin]="isRefreshing"></i>
+          <span>Refresh</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 1: AZURE HOME                                                  -->
+    <!-- =================================================================== -->
+    <div class="p-3 flex-grow-1" *ngIf="activeTab === 'home'">
+      <!-- Heading -->
+      <h5 class="fw-bold mb-3">Azure services</h5>
+
+      <!-- Top Row: Azure Service Icons Grid -->
+      <div class="row g-2 mb-4">
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+          <div class="azure-service-tile" (click)="openDeployModal()">
+            <i class="bi bi-plus-circle-fill tile-icon text-primary"></i>
+            <span class="tile-title">Create a resource</span>
           </div>
         </div>
 
-        <!-- 4 Stat Metric Cards -->
-        <div class="row g-3 mb-4">
-          <div class="col-sm-6 col-lg-3">
-            <div class="metric-box cursor-pointer h-100" (click)="setTab('apps')">
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="metric-title">App Services</span>
-                <i class="bi bi-boxes text-primary fs-5"></i>
-              </div>
-              <div class="metric-value">{{ runningAppsCount }}</div>
-              <div class="text-muted small font-monospace mt-1">{{ apps.length }} total containers</div>
-            </div>
-          </div>
-
-          <div class="col-sm-6 col-lg-3">
-            <div class="metric-box cursor-pointer h-100" (click)="setTab('sql')">
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="metric-title">SQL Databases</span>
-                <i class="bi bi-database text-success fs-5"></i>
-              </div>
-              <div class="metric-value">{{ databases.length }}</div>
-              <div class="text-muted small font-monospace mt-1">picloud-db (PostgreSQL 15)</div>
-            </div>
-          </div>
-
-          <div class="col-sm-6 col-lg-3">
-            <div class="metric-box cursor-pointer h-100" (click)="setTab('networking')">
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="metric-title">Ingress Routes</span>
-                <i class="bi bi-globe text-info fs-5"></i>
-              </div>
-              <div class="metric-value">{{ ingressConfig?.rules?.length || 10 }}</div>
-              <div class="text-muted small font-monospace mt-1">Cloudflare Tunnel Active</div>
-            </div>
-          </div>
-
-          <div class="col-sm-6 col-lg-3">
-            <div class="metric-box cursor-pointer h-100" (click)="setTab('storage')">
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="metric-title">Free Storage</span>
-                <i class="bi bi-hdd-network text-warning fs-5"></i>
-              </div>
-              <div class="metric-value">864 GB</div>
-              <div class="text-muted small font-monospace mt-1">1TB NVMe SSD (3% used)</div>
-            </div>
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+          <div class="azure-service-tile" (click)="setTab('apps')">
+            <i class="bi bi-globe2 tile-icon text-info"></i>
+            <span class="tile-title">App Services</span>
           </div>
         </div>
 
-        <!-- Telemetry Gauges Row -->
-        <div class="row g-3 mb-4">
-          <div class="col-md-3">
-            <div class="card card-portal h-100 p-3">
-              <div class="d-flex justify-content-between text-muted small mb-1">
-                <span>CPU Load Average</span>
-                <span class="font-monospace">4 Cores</span>
-              </div>
-              <div class="fs-5 fw-bold font-monospace">{{ stats?.load_avg || '0.45 0.38 0.35' }}</div>
-              <div class="text-secondary small font-monospace mt-auto pt-2">Uptime: {{ stats?.uptime || '7 weeks' }}</div>
-            </div>
-          </div>
-
-          <div class="col-md-3">
-            <div class="card card-portal h-100 p-3">
-              <div class="d-flex justify-content-between text-muted small mb-1">
-                <span>Memory Allocation</span>
-                <span class="font-monospace fw-bold">{{ stats?.memory?.percent || 44.8 }}%</span>
-              </div>
-              <div class="progress my-2" style="height: 6px;">
-                <div class="progress-bar bg-primary" [style.width.%]="stats?.memory?.percent || 44.8"></div>
-              </div>
-              <div class="d-flex justify-content-between text-muted small font-monospace">
-                <span>3.6 GB Used</span>
-                <span>8.0 GB Total</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-3">
-            <div class="card card-portal h-100 p-3">
-              <div class="d-flex justify-content-between text-muted small mb-1">
-                <span>SoC Temperature</span>
-                <span class="badge bg-success-subtle text-success border border-success-subtle">Normal</span>
-              </div>
-              <div class="fs-5 fw-bold font-monospace text-dark">{{ stats?.temperature || '52.8' }}°C</div>
-              <div class="text-muted small mt-auto pt-2">Throttling threshold: 85°C</div>
-            </div>
-          </div>
-
-          <div class="col-md-3">
-            <div class="card card-portal h-100 p-3">
-              <div class="d-flex justify-content-between text-muted small mb-1">
-                <span>Listening Sockets</span>
-                <span class="badge bg-info-subtle text-info">{{ ports.length }} Open</span>
-              </div>
-              <div class="d-flex flex-wrap gap-1 my-1">
-                <span class="badge bg-light text-dark border font-monospace" *ngFor="let p of ports.slice(0, 6)">:{{ p.port }}</span>
-              </div>
-              <div class="text-muted small mt-auto pt-1">Zero port collisions</div>
-            </div>
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+          <div class="azure-service-tile" (click)="setTab('sql')">
+            <i class="bi bi-database-fill tile-icon text-primary"></i>
+            <span class="tile-title">SQL databases</span>
           </div>
         </div>
 
-        <!-- Deployed Containers Table -->
-        <div class="card card-portal">
-          <div class="card-header d-flex align-items-center justify-content-between">
-            <div>
-              <i class="bi bi-boxes text-primary me-2"></i>
-              <span>Active App Services</span>
-            </div>
-            <button class="btn btn-sm btn-link text-decoration-none p-0" (click)="setTab('apps')">
-              View All ({{ apps.length }}) &rarr;
-            </button>
-          </div>
-          <div class="table-responsive">
-            <table class="table table-hover table-striped align-middle mb-0">
-              <thead>
-                <tr>
-                  <th>Container Name</th>
-                  <th>Status</th>
-                  <th>Image</th>
-                  <th>Port Mapping</th>
-                  <th>CPU / Mem</th>
-                  <th class="text-end">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let app of apps.slice(0, 7)">
-                  <td>
-                    <span class="badge rounded-circle p-1 me-1" [class.bg-success]="app.state === 'running'" [class.bg-danger]="app.state !== 'running'"></span>
-                    <span class="fw-semibold text-dark">{{ app.name }}</span>
-                  </td>
-                  <td><span class="badge bg-light text-secondary border font-monospace">{{ app.status }}</span></td>
-                  <td><span class="font-monospace text-muted small">{{ app.image }}</span></td>
-                  <td><span class="font-monospace text-primary small">{{ app.ports || 'Internal' }}</span></td>
-                  <td><span class="font-monospace small">{{ app.stats?.cpu || '0.1%' }} • {{ app.stats?.mem || '24MB' }}</span></td>
-                  <td class="text-end">
-                    <button class="btn btn-outline-secondary btn-sm py-0 px-2 me-1 font-monospace" (click)="openLogsModal(app.name)">Logs</button>
-                    <button class="btn btn-outline-warning btn-sm py-0 px-1 me-1" (click)="onControlApp(app.name, 'restart')" title="Restart"><i class="bi bi-arrow-repeat"></i></button>
-                    <button class="btn btn-outline-danger btn-sm py-0 px-1" (click)="onControlApp(app.name, 'stop')" *ngIf="app.state === 'running'" title="Stop"><i class="bi bi-stop-fill"></i></button>
-                    <button class="btn btn-outline-success btn-sm py-0 px-1" (click)="onControlApp(app.name, 'start')" *ngIf="app.state !== 'running'" title="Start"><i class="bi bi-play-fill"></i></button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+          <div class="azure-service-tile" (click)="setTab('networking')">
+            <i class="bi bi-diagram-3-fill tile-icon text-success"></i>
+            <span class="tile-title">Virtual networks</span>
           </div>
         </div>
-      </section>
 
-      <!-- =================================================================== -->
-      <!-- TAB 2: APP SERVICES -->
-      <!-- =================================================================== -->
-      <section *ngIf="activeTab === 'apps'">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-          <div>
-            <h4 class="fw-bold mb-0 text-dark"><i class="bi bi-boxes text-primary me-2"></i>App Services (Compute)</h4>
-            <div class="text-muted small">Manage containerized microservices and web servers running on your Raspberry Pi</div>
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+          <div class="azure-service-tile" (click)="setTab('storage')">
+            <i class="bi bi-hdd-stack-fill tile-icon text-warning"></i>
+            <span class="tile-title">Storage accounts</span>
           </div>
-          <button class="btn btn-primary btn-sm d-flex align-items-center gap-1 shadow-sm" (click)="openDeployModal()">
-            <i class="bi bi-plus-circle"></i> Deploy New App
-          </button>
         </div>
 
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+          <div class="azure-service-tile" (click)="setTab('monitoring')">
+            <i class="bi bi-activity tile-icon text-danger"></i>
+            <span class="tile-title">Monitor</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Essentials Banner for Host Infrastructure -->
+      <div class="azure-essentials-box">
+        <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom border-secondary-subtle">
+          <span class="fw-bold"><i class="bi bi-hdd-rack text-primary me-2"></i>Infrastructure Essentials (Raspberry Pi 5 Node)</span>
+          <span class="azure-status-pill running"><span class="azure-status-dot"></span> Active & Running</span>
+        </div>
         <div class="row g-3">
-          <div class="col-md-6 col-lg-4" *ngFor="let app of filteredApps">
-            <div class="card card-portal h-100">
-              <div class="card-header d-flex align-items-center justify-content-between bg-white">
-                <div class="d-flex align-items-center gap-2">
-                  <span class="badge rounded-circle p-1" [class.bg-success]="app.state === 'running'" [class.bg-danger]="app.state !== 'running'"></span>
-                  <span class="fw-bold text-dark text-truncate" style="max-width: 180px;">{{ app.name }}</span>
-                </div>
-                <span class="badge" [class.bg-success-subtle]="app.state === 'running'" [class.text-success]="app.state === 'running'" [class.bg-danger-subtle]="app.state !== 'running'" [class.text-danger]="app.state !== 'running'">
-                  {{ app.state === 'running' ? 'RUNNING' : 'STOPPED' }}
-                </span>
-              </div>
-              <div class="card-body">
-                <div class="text-muted font-monospace small mb-2 text-truncate">Image: {{ app.image }}</div>
-                <div class="d-flex justify-content-between small text-muted mb-1 font-monospace">
-                  <span>Host Port:</span>
-                  <span class="text-dark fw-semibold">{{ app.ports || 'None' }}</span>
-                </div>
-                <div class="d-flex justify-content-between small text-muted mb-3 font-monospace">
-                  <span>Status:</span>
-                  <span>{{ app.status }}</span>
-                </div>
-
-                <!-- Stats Box -->
-                <div class="bg-light border rounded p-2 small font-monospace">
-                  <div class="d-flex justify-content-between">
-                    <span class="text-muted">CPU:</span>
-                    <span class="fw-bold">{{ app.stats?.cpu || '0.0%' }}</span>
-                  </div>
-                  <div class="d-flex justify-content-between">
-                    <span class="text-muted">Memory:</span>
-                    <span>{{ app.stats?.mem || 'N/A' }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="card-footer bg-white border-top d-flex align-items-center justify-content-between">
-                <div>
-                  <button class="btn btn-outline-secondary btn-sm me-1 py-0 px-2" (click)="openLogsModal(app.name)">Logs</button>
-                  <button class="btn btn-outline-secondary btn-sm py-0 px-2" (click)="openExecModal(app.name)">Exec</button>
-                </div>
-                <div>
-                  <button class="btn btn-outline-warning btn-sm py-0 px-1 me-1" (click)="onControlApp(app.name, 'restart')" title="Restart"><i class="bi bi-arrow-repeat"></i></button>
-                  <button class="btn btn-outline-danger btn-sm py-0 px-1 me-1" (click)="onControlApp(app.name, 'stop')" *ngIf="app.state === 'running'" title="Stop"><i class="bi bi-stop-fill"></i></button>
-                  <button class="btn btn-outline-success btn-sm py-0 px-1 me-1" (click)="onControlApp(app.name, 'start')" *ngIf="app.state !== 'running'" title="Start"><i class="bi bi-play-fill"></i></button>
-                  <button class="btn btn-outline-danger btn-sm py-0 px-1" (click)="onControlApp(app.name, 'delete')" title="Delete"><i class="bi bi-trash"></i></button>
-                </div>
-              </div>
-            </div>
+          <div class="col-6 col-md-3">
+            <div class="azure-essentials-label">Resource Group</div>
+            <div class="azure-essentials-value text-primary font-monospace">rg-picloud-homelab</div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="azure-essentials-label">Location</div>
+            <div class="azure-essentials-value">Home Lab (192.168.1.151)</div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="azure-essentials-label">Subscription</div>
+            <div class="azure-essentials-value">PiCloud Dedicated Enterprise</div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="azure-essentials-label">Subscription ID</div>
+            <div class="azure-essentials-value font-monospace text-truncate">f49cf9d5-aee5-4d96-a2ae-a6356c901c7e</div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="azure-essentials-label">Operating System</div>
+            <div class="azure-essentials-value font-monospace small">{{ stats?.kernel || 'Linux 6.6.20 aarch64' }}</div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="azure-essentials-label">SoC Temperature</div>
+            <div class="azure-essentials-value font-monospace text-success">{{ stats?.temperature || '52.8' }}°C (Normal)</div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="azure-essentials-label">Memory Utilization</div>
+            <div class="azure-essentials-value font-monospace">{{ stats?.memory?.percent || 44.8 }}% (3.6 GB / 8.0 GB)</div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="azure-essentials-label">Public Domain Ingress</div>
+            <div class="azure-essentials-value font-monospace text-primary">portal.pottapk.win</div>
           </div>
         </div>
-      </section>
+      </div>
 
-      <!-- =================================================================== -->
-      <!-- TAB 3: SQL DATABASES -->
-      <!-- =================================================================== -->
-      <section *ngIf="activeTab === 'sql'">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-          <div>
-            <h4 class="fw-bold mb-0 text-dark"><i class="bi bi-database text-success me-2"></i>SQL & Managed Databases</h4>
-            <div class="text-muted small">PostgreSQL database instances, query studio, connection strings, and backups</div>
+      <!-- Recent Resources DataGrid -->
+      <div class="azure-card">
+        <div class="azure-card-header">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-clock-history text-primary"></i>
+            <span>Recent Resources</span>
+            <span class="badge bg-secondary font-monospace">{{ apps.length + databases.length }} resources</span>
           </div>
           <div class="d-flex gap-2">
-            <a href="https://postgresql.pottapk.win" target="_blank" class="btn btn-outline-secondary btn-sm">
-              <i class="bi bi-box-arrow-up-right me-1"></i> Adminer GUI
-            </a>
-            <button class="btn btn-success btn-sm" (click)="isCreatingDb = !isCreatingDb">
-              <i class="bi bi-plus-circle me-1"></i> New Database
+            <button class="azure-toolbar-btn" (click)="openDeployModal()">
+              <i class="bi bi-plus"></i> Create
+            </button>
+            <button class="azure-toolbar-btn" (click)="setTab('apps')">
+              View all &rarr;
             </button>
           </div>
         </div>
 
-        <div class="alert alert-info py-2 small font-monospace" *ngIf="sqlBackupMsg">{{ sqlBackupMsg }}</div>
+        <div class="azure-table-container">
+          <table class="azure-table">
+            <thead>
+              <tr>
+                <th style="width: 30px;"><input type="checkbox" /></th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Location</th>
+                <th>Image / Engine</th>
+                <th>Port / URL</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Deployed Apps -->
+              <tr *ngFor="let app of apps.slice(0, 8)">
+                <td><input type="checkbox" /></td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-globe2 azure-service-icon app-service"></i>
+                    <a href="javascript:void(0)" class="resource-link" (click)="openLogsModal(app.name)">{{ app.name }}</a>
+                  </div>
+                </td>
+                <td><span class="azure-text-secondary">App Service</span></td>
+                <td>
+                  <span class="azure-status-pill" [class.running]="app.state === 'running'" [class.stopped]="app.state !== 'running'">
+                    <span class="azure-status-dot"></span>
+                    {{ app.state === 'running' ? 'Running' : 'Stopped' }}
+                  </span>
+                </td>
+                <td>Home Lab (Pi 5)</td>
+                <td><span class="font-monospace text-muted small">{{ app.image }}</span></td>
+                <td><span class="font-monospace text-primary small">{{ app.ports || 'Internal' }}</span></td>
+                <td class="text-end">
+                  <button class="azure-toolbar-btn py-0 px-2" (click)="openLogsModal(app.name)">Logs</button>
+                  <button class="azure-toolbar-btn py-0 px-2" (click)="onControlApp(app.name, 'restart')" title="Restart"><i class="bi bi-arrow-repeat"></i></button>
+                </td>
+              </tr>
 
-        <!-- Instance Overview -->
-        <div class="row g-3 mb-4">
-          <div class="col-md-3">
-            <div class="metric-box">
-              <div class="metric-title">Engine</div>
-              <div class="fw-bold fs-6 mt-1 text-dark">PostgreSQL 15</div>
-              <div class="small text-muted font-monospace">Container: picloud-db</div>
+              <!-- Managed PostgreSQL -->
+              <tr *ngFor="let db of databases">
+                <td><input type="checkbox" /></td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-database-fill azure-service-icon sql"></i>
+                    <a href="javascript:void(0)" class="resource-link" (click)="setTab('sql'); selectDatabase(db.name)">{{ db.name }}</a>
+                  </div>
+                </td>
+                <td><span class="azure-text-secondary">SQL Database</span></td>
+                <td>
+                  <span class="azure-status-pill running">
+                    <span class="azure-status-dot"></span> Online
+                  </span>
+                </td>
+                <td>Home Lab (Pi 5)</td>
+                <td><span class="font-monospace text-muted small">PostgreSQL 15</span></td>
+                <td><span class="font-monospace text-primary small">192.168.1.151:5432</span></td>
+                <td class="text-end">
+                  <button class="azure-toolbar-btn py-0 px-2" (click)="setTab('sql'); selectDatabase(db.name)">Query</button>
+                  <button class="azure-toolbar-btn py-0 px-2" (click)="backupDb(db.name)" title="Backup"><i class="bi bi-download"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 2: HARDWARE DASHBOARD                                          -->
+    <!-- =================================================================== -->
+    <div class="p-3 flex-grow-1" *ngIf="activeTab === 'dashboard'">
+      <!-- Toolbar -->
+      <div class="azure-toolbar mb-3">
+        <button class="azure-toolbar-btn primary" (click)="openDeployModal()">
+          <i class="bi bi-plus-lg"></i> Deploy App
+        </button>
+        <button class="azure-toolbar-btn" (click)="loadAllData(true)">
+          <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+        <button class="azure-toolbar-btn" (click)="isShellOpen = true">
+          <i class="bi bi-terminal"></i> Cloud Shell
+        </button>
+      </div>
+
+      <!-- Telemetry Metric Tiles -->
+      <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+          <div class="azure-card p-3 h-100 cursor-pointer" (click)="setTab('apps')">
+            <div class="d-flex justify-content-between align-items-center text-muted small mb-1">
+              <span>ACTIVE APPS</span>
+              <i class="bi bi-globe2 text-info fs-5"></i>
             </div>
+            <div class="fs-3 fw-bold">{{ runningAppsCount }}</div>
+            <div class="text-muted small font-monospace">{{ apps.length }} total containers</div>
           </div>
-          <div class="col-md-3">
-            <div class="metric-box">
-              <div class="metric-title">Endpoint</div>
-              <div class="fw-bold fs-6 mt-1 text-dark font-monospace">192.168.1.151:5432</div>
-              <div class="small text-success font-monospace">Ready for connections</div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+          <div class="azure-card p-3 h-100 cursor-pointer" (click)="setTab('sql')">
+            <div class="d-flex justify-content-between align-items-center text-muted small mb-1">
+              <span>SQL DATABASES</span>
+              <i class="bi bi-database-fill text-primary fs-5"></i>
             </div>
+            <div class="fs-3 fw-bold">{{ databases.length }}</div>
+            <div class="text-muted small font-monospace">picloud-db (PostgreSQL 15)</div>
           </div>
-          <div class="col-md-3">
-            <div class="metric-box">
-              <div class="metric-title">Databases</div>
-              <div class="fw-bold fs-6 mt-1 text-dark">{{ databases.length }} Active</div>
-              <div class="small text-muted font-monospace">Default: picloud</div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+          <div class="azure-card p-3 h-100 cursor-pointer" (click)="setTab('networking')">
+            <div class="d-flex justify-content-between align-items-center text-muted small mb-1">
+              <span>INGRESS ROUTES</span>
+              <i class="bi bi-diagram-3-fill text-success fs-5"></i>
             </div>
+            <div class="fs-3 fw-bold">{{ ingressConfig?.rules?.length || 10 }}</div>
+            <div class="text-muted small font-monospace">Cloudflare Tunnel Active</div>
           </div>
-          <div class="col-md-3">
-            <div class="metric-box">
-              <div class="metric-title">Public GUI</div>
-              <div class="fw-bold fs-6 mt-1 text-primary font-monospace text-truncate">postgresql.pottapk.win</div>
-              <div class="small text-muted">Cloudflare Tunnel (:5050)</div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+          <div class="azure-card p-3 h-100 cursor-pointer" (click)="setTab('storage')">
+            <div class="d-flex justify-content-between align-items-center text-muted small mb-1">
+              <span>FREE STORAGE</span>
+              <i class="bi bi-hdd-stack-fill text-warning fs-5"></i>
+            </div>
+            <div class="fs-3 fw-bold">864 GB</div>
+            <div class="text-muted small font-monospace">1TB NVMe PCIe (3% used)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Hardware Gauges -->
+      <div class="row g-3">
+        <div class="col-md-3">
+          <div class="azure-card p-3 h-100">
+            <div class="d-flex justify-content-between text-muted small mb-1">
+              <span>CPU Load Average</span>
+              <span class="font-monospace">4 Cores</span>
+            </div>
+            <div class="fs-5 fw-bold font-monospace">{{ stats?.load_avg || '0.45 0.38 0.35' }}</div>
+            <div class="azure-text-muted small font-monospace mt-auto pt-2">Uptime: {{ stats?.uptime || '7 weeks' }}</div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="azure-card p-3 h-100">
+            <div class="d-flex justify-content-between text-muted small mb-1">
+              <span>Memory Allocation</span>
+              <span class="font-monospace fw-bold">{{ stats?.memory?.percent || 44.8 }}%</span>
+            </div>
+            <div class="progress my-2" style="height: 6px;">
+              <div class="progress-bar bg-primary" [style.width.%]="stats?.memory?.percent || 44.8"></div>
+            </div>
+            <div class="d-flex justify-content-between text-muted small font-monospace">
+              <span>3.6 GB Used</span>
+              <span>8.0 GB Total</span>
             </div>
           </div>
         </div>
 
-        <!-- Databases & Tables Row -->
-        <div class="row g-3 mb-4">
+        <div class="col-md-3">
+          <div class="azure-card p-3 h-100">
+            <div class="d-flex justify-content-between text-muted small mb-1">
+              <span>SoC Temperature</span>
+              <span class="azure-status-pill running"><span class="azure-status-dot"></span> Normal</span>
+            </div>
+            <div class="fs-5 fw-bold font-monospace">{{ stats?.temperature || '52.8' }}°C</div>
+            <div class="azure-text-muted small mt-auto pt-2">Threshold: 85°C</div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="azure-card p-3 h-100">
+            <div class="d-flex justify-content-between text-muted small mb-1">
+              <span>Open TCP Sockets</span>
+              <span class="badge bg-secondary font-monospace">{{ ports.length }}</span>
+            </div>
+            <div class="d-flex flex-wrap gap-1 my-1">
+              <span class="badge bg-secondary-subtle text-secondary font-monospace" *ngFor="let p of ports.slice(0, 6)">:{{ p.port }}</span>
+            </div>
+            <div class="azure-text-muted small mt-auto pt-1">Zero port conflicts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 3: APP SERVICES (COMPUTE)                                      -->
+    <!-- =================================================================== -->
+    <div class="p-3 flex-grow-1" *ngIf="activeTab === 'apps'">
+      <!-- Azure Command Bar -->
+      <div class="azure-toolbar mb-3">
+        <button class="azure-toolbar-btn primary" (click)="openDeployModal()">
+          <i class="bi bi-plus-lg"></i> Create
+        </button>
+        <button class="azure-toolbar-btn" (click)="loadAllData(true)">
+          <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+        <div class="azure-toolbar-divider"></div>
+        <button class="azure-toolbar-btn" (click)="appViewMode = (appViewMode === 'grid' ? 'cards' : 'grid')">
+          <i class="bi" [class.bi-grid]="appViewMode === 'grid'" [class.bi-table]="appViewMode === 'cards'"></i>
+          <span>{{ appViewMode === 'grid' ? 'Card view' : 'Grid view' }}</span>
+        </button>
+        <button class="azure-toolbar-btn" (click)="isShellOpen = true">
+          <i class="bi bi-terminal"></i> Cloud Shell
+        </button>
+      </div>
+
+      <!-- Essentials Banner -->
+      <div class="azure-essentials-box">
+        <div class="row g-2">
+          <div class="col-6 col-md-3">
+            <div class="azure-essentials-label">Service Type</div>
+            <div class="azure-essentials-value">App Services (Docker Microservices)</div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="azure-essentials-label">Node Host</div>
+            <div class="azure-essentials-value font-monospace">192.168.1.151</div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="azure-essentials-label">Running Instances</div>
+            <div class="azure-essentials-value font-monospace">{{ runningAppsCount }} of {{ apps.length }} Active</div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="azure-essentials-label">Default Domain</div>
+            <div class="azure-essentials-value font-monospace text-primary">pottapk.win</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="d-flex align-items-center gap-2">
+          <input
+            type="text"
+            class="azure-input"
+            style="width: 280px;"
+            placeholder="Filter for any field..."
+            [(ngModel)]="searchQuery"
+          />
+          <span class="azure-text-muted small font-monospace">{{ filteredApps.length }} items</span>
+        </div>
+      </div>
+
+      <!-- Grid Table View -->
+      <div class="azure-card" *ngIf="appViewMode === 'grid'">
+        <div class="azure-table-container">
+          <table class="azure-table">
+            <thead>
+              <tr>
+                <th style="width: 30px;"><input type="checkbox" /></th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>App Type</th>
+                <th>Docker Image</th>
+                <th>Port Mapping</th>
+                <th>CPU / Mem</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let app of filteredApps">
+                <td><input type="checkbox" /></td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-globe2 azure-service-icon app-service"></i>
+                    <a href="javascript:void(0)" class="resource-link" (click)="openLogsModal(app.name)">{{ app.name }}</a>
+                  </div>
+                </td>
+                <td>
+                  <span class="azure-status-pill" [class.running]="app.state === 'running'" [class.stopped]="app.state !== 'running'">
+                    <span class="azure-status-dot"></span>
+                    {{ app.state === 'running' ? 'Running' : 'Stopped' }}
+                  </span>
+                </td>
+                <td><span class="azure-text-secondary">Containerized App</span></td>
+                <td><span class="font-monospace text-muted small">{{ app.image }}</span></td>
+                <td><span class="font-monospace text-primary small">{{ app.ports || 'Internal' }}</span></td>
+                <td><span class="font-monospace small">{{ app.stats?.cpu || '0.1%' }} • {{ app.stats?.mem || '24MB' }}</span></td>
+                <td class="text-end">
+                  <button class="azure-toolbar-btn py-0 px-2" (click)="openLogsModal(app.name)">Logs</button>
+                  <button class="azure-toolbar-btn py-0 px-2" (click)="openExecModal(app.name)">Exec</button>
+                  <button class="azure-toolbar-btn py-0 px-2" (click)="onControlApp(app.name, 'restart')" title="Restart"><i class="bi bi-arrow-repeat"></i></button>
+                  <button class="azure-toolbar-btn py-0 px-2" (click)="onControlApp(app.name, 'stop')" *ngIf="app.state === 'running'" title="Stop"><i class="bi bi-stop-fill text-danger"></i></button>
+                  <button class="azure-toolbar-btn py-0 px-2" (click)="onControlApp(app.name, 'start')" *ngIf="app.state !== 'running'" title="Start"><i class="bi bi-play-fill text-success"></i></button>
+                  <button class="azure-toolbar-btn py-0 px-2" (click)="onControlApp(app.name, 'delete')" title="Delete"><i class="bi bi-trash text-danger"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Card Tiles View -->
+      <div class="row g-3" *ngIf="appViewMode === 'cards'">
+        <div class="col-md-6 col-lg-4" *ngFor="let app of filteredApps">
+          <div class="azure-card h-100">
+            <div class="azure-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-globe2 azure-service-icon app-service"></i>
+                <span class="fw-bold text-truncate" style="max-width: 180px;">{{ app.name }}</span>
+              </div>
+              <span class="azure-status-pill" [class.running]="app.state === 'running'" [class.stopped]="app.state !== 'running'">
+                <span class="azure-status-dot"></span>
+                {{ app.state === 'running' ? 'Running' : 'Stopped' }}
+              </span>
+            </div>
+            <div class="p-3">
+              <div class="azure-text-muted font-monospace small mb-2 text-truncate">Image: {{ app.image }}</div>
+              <div class="d-flex justify-content-between small azure-text-secondary mb-1 font-monospace">
+                <span>Port Mapping:</span>
+                <span class="fw-semibold">{{ app.ports || 'Internal' }}</span>
+              </div>
+              <div class="d-flex justify-content-between small azure-text-secondary mb-3 font-monospace">
+                <span>CPU / Mem:</span>
+                <span>{{ app.stats?.cpu || '0.1%' }} • {{ app.stats?.mem || '24MB' }}</span>
+              </div>
+            </div>
+            <div class="p-2 border-top border-secondary-subtle d-flex justify-content-between align-items-center">
+              <div>
+                <button class="azure-toolbar-btn py-0 px-2" (click)="openLogsModal(app.name)">Logs</button>
+                <button class="azure-toolbar-btn py-0 px-2" (click)="openExecModal(app.name)">Exec</button>
+              </div>
+              <div>
+                <button class="azure-toolbar-btn py-0 px-2" (click)="onControlApp(app.name, 'restart')" title="Restart"><i class="bi bi-arrow-repeat"></i></button>
+                <button class="azure-toolbar-btn py-0 px-2" (click)="onControlApp(app.name, 'delete')" title="Delete"><i class="bi bi-trash text-danger"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 4: SQL DATABASES                                               -->
+    <!-- =================================================================== -->
+    <div class="p-3 flex-grow-1" *ngIf="activeTab === 'sql'">
+      <!-- Command Bar -->
+      <div class="azure-toolbar mb-3">
+        <button class="azure-toolbar-btn primary" (click)="isCreatingDb = !isCreatingDb">
+          <i class="bi bi-plus-lg"></i> Create Database
+        </button>
+        <button class="azure-toolbar-btn" (click)="loadAllData(true)">
+          <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+        <div class="azure-toolbar-divider"></div>
+        <a href="https://postgresql.pottapk.win" target="_blank" class="azure-toolbar-btn text-decoration-none">
+          <i class="bi bi-box-arrow-up-right"></i> Adminer Web GUI
+        </a>
+      </div>
+
+      <!-- Essentials Banner -->
+      <div class="azure-essentials-box">
+        <div class="row g-2">
+          <div class="col-6 col-md-3">
+            <div class="azure-essentials-label">Engine</div>
+            <div class="azure-essentials-value font-monospace">PostgreSQL 15 (picloud-db)</div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="azure-essentials-label">Endpoint</div>
+            <div class="azure-essentials-value font-monospace">192.168.1.151:5432</div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="azure-essentials-label">Active Database</div>
+            <div class="azure-essentials-value font-monospace text-primary">{{ selectedDb }}</div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="azure-essentials-label">Public GUI</div>
+            <div class="azure-essentials-value font-monospace text-primary">postgresql.pottapk.win</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs Bar -->
+      <div class="azure-tab-bar">
+        <button class="azure-tab-btn" [class.active]="activeSqlTab === 'overview'" (click)="activeSqlTab = 'overview'">
+          <i class="bi bi-database me-1"></i> Databases & Tables
+        </button>
+        <button class="azure-tab-btn" [class.active]="activeSqlTab === 'query'" (click)="activeSqlTab = 'query'">
+          <i class="bi bi-terminal-split me-1"></i> Query Studio
+        </button>
+        <button class="azure-tab-btn" [class.active]="activeSqlTab === 'strings'" (click)="activeSqlTab = 'strings'">
+          <i class="bi bi-link-45deg me-1"></i> Connection Strings
+        </button>
+      </div>
+
+      <!-- Sub-Tab 1: Databases & Tables -->
+      <div *ngIf="activeSqlTab === 'overview'">
+        <div class="row g-3">
+          <!-- Databases list -->
           <div class="col-md-4">
-            <div class="card card-portal h-100">
-              <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <div class="azure-card h-100">
+              <div class="azure-card-header">
                 <span>Databases ({{ databases.length }})</span>
                 <button class="btn btn-sm btn-link p-0 text-decoration-none" (click)="isCreatingDb = !isCreatingDb">+ Add</button>
               </div>
 
               <!-- Create DB form -->
-              <div class="p-2 border-bottom bg-light" *ngIf="isCreatingDb">
+              <div class="p-2 border-bottom border-secondary-subtle" *ngIf="isCreatingDb">
                 <div class="input-group input-group-sm">
-                  <input type="text" class="form-control" placeholder="db_name" [(ngModel)]="newDbName" />
-                  <button class="btn btn-success" (click)="createDatabase()">Save</button>
+                  <input type="text" class="form-control azure-input" placeholder="db_name" [(ngModel)]="newDbName" />
+                  <button class="btn btn-primary btn-sm" (click)="createDatabase()">Save</button>
                 </div>
               </div>
 
@@ -499,13 +711,13 @@
                   [class.active]="selectedDb === db.name"
                   (click)="selectDatabase(db.name)"
                 >
-                  <div>
-                    <i class="bi bi-database me-2"></i>
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-database-fill azure-service-icon sql"></i>
                     <span class="fw-semibold">{{ db.name }}</span>
                   </div>
                   <div class="d-flex align-items-center gap-2">
                     <span class="badge bg-secondary font-monospace">{{ db.size }}</span>
-                    <button class="btn btn-sm btn-outline-secondary py-0 px-1" (click)="$event.stopPropagation(); backupDb(db.name)" title="Backup pg_dump">
+                    <button class="azure-toolbar-btn py-0 px-2" (click)="$event.stopPropagation(); backupDb(db.name)" title="Backup pg_dump">
                       <i class="bi bi-download"></i>
                     </button>
                   </div>
@@ -514,105 +726,111 @@
             </div>
           </div>
 
+          <!-- Tables in DB -->
           <div class="col-md-8">
-            <div class="card card-portal h-100">
-              <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <div class="azure-card h-100">
+              <div class="azure-card-header">
                 <span>Tables in Database "{{ selectedDb }}"</span>
                 <span class="badge bg-secondary font-monospace">{{ tables.length }} Tables</span>
               </div>
-              <div class="card-body">
+              <div class="p-3">
                 <div class="row g-2" *ngIf="tables.length">
                   <div class="col-sm-6 col-lg-4" *ngFor="let tbl of tables">
-                    <div class="border rounded p-2 bg-light cursor-pointer" (click)="sqlQuery = 'SELECT * FROM ' + tbl.name + ' LIMIT 25;'">
-                      <div class="fw-bold text-dark font-monospace text-truncate">{{ tbl.name }}</div>
-                      <div class="small text-muted font-monospace">{{ tbl.size }}</div>
+                    <div class="azure-card p-2 cursor-pointer mb-0" (click)="activeSqlTab = 'query'; sqlQuery = 'SELECT * FROM ' + tbl.name + ' LIMIT 25;'">
+                      <div class="fw-bold font-monospace text-truncate">{{ tbl.name }}</div>
+                      <div class="small azure-text-muted font-monospace">{{ tbl.size }}</div>
                     </div>
                   </div>
                 </div>
-                <div class="text-muted small text-center py-4" *ngIf="!tables.length">
+                <div class="azure-text-muted small text-center py-4" *ngIf="!tables.length">
                   No public tables found in {{ selectedDb }}.
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- SQL Query Studio -->
-        <div class="card card-portal mb-4">
-          <div class="card-header bg-white d-flex align-items-center justify-content-between">
+      <!-- Sub-Tab 2: Query Studio -->
+      <div *ngIf="activeSqlTab === 'query'">
+        <div class="azure-card">
+          <div class="azure-card-header">
             <div class="d-flex align-items-center gap-2">
-              <i class="bi bi-terminal-split text-success"></i>
-              <span class="fw-bold">Interactive SQL Studio</span>
-              <span class="badge bg-light text-secondary border font-monospace">Target: {{ selectedDb }}</span>
+              <i class="bi bi-terminal-split text-primary"></i>
+              <span class="fw-bold">Interactive SQL Editor</span>
+              <span class="badge bg-secondary font-monospace">Target: {{ selectedDb }}</span>
             </div>
-            <button class="btn btn-success btn-sm d-flex align-items-center gap-1" (click)="runSqlQuery()" [disabled]="isRunningQuery">
+            <button class="azure-toolbar-btn primary" (click)="runSqlQuery()" [disabled]="isRunningQuery">
               <i class="bi bi-play-fill"></i>
-              <span>{{ isRunningQuery ? 'Running...' : 'Execute Query' }}</span>
+              <span>{{ isRunningQuery ? 'Running...' : 'Execute' }}</span>
             </button>
           </div>
-          <div class="card-body p-2 bg-dark">
+          <div class="p-2" style="background-color: var(--azure-terminal-bg);">
             <textarea
-              class="form-control bg-dark text-success font-monospace border-0"
-              rows="3"
+              class="form-control font-monospace border-0"
+              style="background: transparent; color: #50e6ff; font-size: 13px;"
+              rows="4"
               [(ngModel)]="sqlQuery"
               placeholder="SELECT * FROM table_name;"
             ></textarea>
           </div>
-          <div class="card-footer bg-light" *ngIf="queryOutput || queryError">
-            <div class="d-flex justify-content-between small text-muted mb-1">
+          <div class="p-3 border-top border-secondary-subtle" *ngIf="queryOutput || queryError">
+            <div class="d-flex justify-content-between small azure-text-muted mb-1 font-monospace">
               <span>Query Results:</span>
-              <span class="font-monospace" *ngIf="queryDuration !== null">Duration: {{ queryDuration }}ms</span>
+              <span *ngIf="queryDuration !== null">Execution Time: {{ queryDuration }}ms</span>
             </div>
-            <pre class="bg-dark text-white font-monospace p-3 rounded small mb-0 overflow-auto" style="max-height: 250px;" *ngIf="queryOutput">{{ queryOutput }}</pre>
+            <pre class="azure-terminal mb-0" style="max-height: 250px;" *ngIf="queryOutput">{{ queryOutput }}</pre>
             <div class="alert alert-danger font-monospace small mb-0" *ngIf="queryError">{{ queryError }}</div>
           </div>
         </div>
+      </div>
 
-        <!-- Connection Strings -->
-        <div class="card card-portal" *ngIf="connectionStrings">
-          <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <span>Connection Strings & SDK Setup</span>
-            <button class="btn btn-outline-secondary btn-sm py-0 px-2" (click)="showPassword = !showPassword">
+      <!-- Sub-Tab 3: Connection Strings -->
+      <div *ngIf="activeSqlTab === 'strings'">
+        <div class="azure-card" *ngIf="connectionStrings">
+          <div class="azure-card-header">
+            <span>Connection Strings & SDK Configurations</span>
+            <button class="azure-toolbar-btn" (click)="showPassword = !showPassword">
               {{ showPassword ? 'Mask Password' : 'Show Password' }}
             </button>
           </div>
-          <div class="card-body">
+          <div class="p-3">
             <div class="row g-3">
               <div class="col-md-6">
-                <label class="form-label small text-muted fw-semibold">PostgreSQL URI</label>
+                <label class="form-label small azure-text-secondary fw-semibold">PostgreSQL URI</label>
                 <div class="input-group input-group-sm">
-                  <input type="text" class="form-control font-monospace" [value]="showPassword ? connectionStrings.uri : connectionStrings.uri.replace(':Varunbike@1234@', ':••••••••@')" readonly />
-                  <button class="btn btn-outline-secondary" (click)="copyText(connectionStrings.uri, 'uri')">
+                  <input type="text" class="form-control azure-input font-monospace" [value]="showPassword ? connectionStrings.uri : connectionStrings.uri.replace(':Varunbike@1234@', ':••••••••@')" readonly />
+                  <button class="azure-toolbar-btn" (click)="copyText(connectionStrings.uri, 'uri')">
                     {{ copiedKey === 'uri' ? 'Copied' : 'Copy' }}
                   </button>
                 </div>
               </div>
 
               <div class="col-md-6">
-                <label class="form-label small text-muted fw-semibold">PSQL Terminal Command</label>
+                <label class="form-label small azure-text-secondary fw-semibold">PSQL CLI Command</label>
                 <div class="input-group input-group-sm">
-                  <input type="text" class="form-control font-monospace" [value]="connectionStrings.psql_cli" readonly />
-                  <button class="btn btn-outline-secondary" (click)="copyText(connectionStrings.psql_cli, 'cli')">
+                  <input type="text" class="form-control azure-input font-monospace" [value]="connectionStrings.psql_cli" readonly />
+                  <button class="azure-toolbar-btn" (click)="copyText(connectionStrings.psql_cli, 'cli')">
                     {{ copiedKey === 'cli' ? 'Copied' : 'Copy' }}
                   </button>
                 </div>
               </div>
 
               <div class="col-md-6">
-                <label class="form-label small text-muted fw-semibold">Prisma / Next.js ORM</label>
+                <label class="form-label small azure-text-secondary fw-semibold">Prisma ORM</label>
                 <div class="input-group input-group-sm">
-                  <input type="text" class="form-control font-monospace" [value]="showPassword ? connectionStrings.prisma : connectionStrings.prisma.replace(':Varunbike@1234@', ':••••••••@')" readonly />
-                  <button class="btn btn-outline-secondary" (click)="copyText(connectionStrings.prisma, 'prisma')">
+                  <input type="text" class="form-control azure-input font-monospace" [value]="showPassword ? connectionStrings.prisma : connectionStrings.prisma.replace(':Varunbike@1234@', ':••••••••@')" readonly />
+                  <button class="azure-toolbar-btn" (click)="copyText(connectionStrings.prisma, 'prisma')">
                     {{ copiedKey === 'prisma' ? 'Copied' : 'Copy' }}
                   </button>
                 </div>
               </div>
 
               <div class="col-md-6">
-                <label class="form-label small text-muted fw-semibold">Python AsyncPG / SQLAlchemy</label>
+                <label class="form-label small azure-text-secondary fw-semibold">Python AsyncPG / SQLAlchemy</label>
                 <div class="input-group input-group-sm">
-                  <input type="text" class="form-control font-monospace" [value]="showPassword ? connectionStrings.python_asyncpg : connectionStrings.python_asyncpg.replace(':Varunbike@1234@', ':••••••••@')" readonly />
-                  <button class="btn btn-outline-secondary" (click)="copyText(connectionStrings.python_asyncpg, 'py')">
+                  <input type="text" class="form-control azure-input font-monospace" [value]="showPassword ? connectionStrings.python_asyncpg : connectionStrings.python_asyncpg.replace(':Varunbike@1234@', ':••••••••@')" readonly />
+                  <button class="azure-toolbar-btn" (click)="copyText(connectionStrings.python_asyncpg, 'py')">
                     {{ copiedKey === 'py' ? 'Copied' : 'Copy' }}
                   </button>
                 </div>
@@ -620,319 +838,370 @@
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    </div>
 
-      <!-- =================================================================== -->
-      <!-- TAB 4: VIRTUAL NETWORK & INGRESS -->
-      <!-- =================================================================== -->
-      <section *ngIf="activeTab === 'networking'">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-          <div>
-            <h4 class="fw-bold mb-0 text-dark"><i class="bi bi-globe text-primary me-2"></i>Virtual Network & Ingress</h4>
-            <div class="text-muted small">Cloudflare Tunnel subdomain routing rules and live host socket inspector</div>
+    <!-- =================================================================== -->
+    <!-- VIEW 5: VIRTUAL NETWORKS & INGRESS                                  -->
+    <!-- =================================================================== -->
+    <div class="p-3 flex-grow-1" *ngIf="activeTab === 'networking'">
+      <!-- Command Bar -->
+      <div class="azure-toolbar mb-3">
+        <button class="azure-toolbar-btn primary" (click)="isAddingRoute = !isAddingRoute">
+          <i class="bi bi-plus-lg"></i> Add Route
+        </button>
+        <button class="azure-toolbar-btn" (click)="testEndpoints()" [disabled]="isCheckingHealth">
+          <i class="bi bi-broadcast"></i> {{ isCheckingHealth ? 'Testing...' : 'Test Endpoints' }}
+        </button>
+        <button class="azure-toolbar-btn" (click)="loadAllData(true)">
+          <i class="bi bi-arrow-clockwise"></i> Rescan Sockets
+        </button>
+      </div>
+
+      <!-- Tabs Bar -->
+      <div class="azure-tab-bar">
+        <button class="azure-tab-btn" [class.active]="activeNetTab === 'ingress'" (click)="activeNetTab = 'ingress'">
+          <i class="bi bi-globe me-1"></i> Cloudflare Ingress Routing
+        </button>
+        <button class="azure-tab-btn" [class.active]="activeNetTab === 'ports'" (click)="activeNetTab = 'ports'">
+          <i class="bi bi-broadcast-pin me-1"></i> Port Radar (TCP Sockets)
+        </button>
+      </div>
+
+      <!-- Add Route Inline Card Form -->
+      <div class="azure-card p-3 mb-3" *ngIf="isAddingRoute">
+        <h6 class="fw-bold mb-2">Register Ingress Route in /etc/cloudflared/config.yml</h6>
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label class="form-label small azure-text-secondary">Subdomain</label>
+            <div class="input-group input-group-sm">
+              <input type="text" class="form-control azure-input font-monospace" [(ngModel)]="newRouteHost" placeholder="subdomain" />
+              <span class="input-group-text font-monospace">.pottapk.win</span>
+            </div>
           </div>
-          <div class="d-flex gap-2">
-            <button class="btn btn-outline-secondary btn-sm" (click)="testEndpoints()" [disabled]="isCheckingHealth">
-              <i class="bi bi-broadcast me-1"></i> {{ isCheckingHealth ? 'Testing...' : 'Test Endpoints' }}
-            </button>
-            <button class="btn btn-primary btn-sm" (click)="isAddingRoute = !isAddingRoute">
-              <i class="bi bi-plus-circle me-1"></i> Add Route
+          <div class="col-md-4">
+            <label class="form-label small azure-text-secondary">Destination Service URL</label>
+            <input type="text" class="form-control form-control-sm azure-input font-monospace" [(ngModel)]="newRouteService" placeholder="8095 or http://localhost:8095" />
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button class="azure-toolbar-btn primary w-100 justify-content-center" (click)="saveRoute()" [disabled]="isSavingRoute">
+              {{ isSavingRoute ? 'Saving...' : 'Save & Reload' }}
             </button>
           </div>
         </div>
+      </div>
 
-        <div class="alert alert-info py-2 small font-monospace" *ngIf="routeMsg">{{ routeMsg }}</div>
+      <!-- Sub-Tab 1: Ingress Table -->
+      <div class="azure-card" *ngIf="activeNetTab === 'ingress'">
+        <div class="azure-card-header">
+          <span>Active Ingress Rules (Cloudflare Tunnel: f49cf9d5-aee5-4d96-a2ae-a6356c901c7e)</span>
+          <span class="badge bg-secondary font-monospace">{{ ingressConfig?.rules?.length || 0 }} Rules</span>
+        </div>
+        <div class="azure-table-container">
+          <table class="azure-table">
+            <thead>
+              <tr>
+                <th>Subdomain</th>
+                <th>Destination Service</th>
+                <th>Edge Status</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let r of ingressConfig?.rules">
+                <td>
+                  <span *ngIf="r.is_fallback" class="font-monospace text-muted fst-italic">Fallback (Catch-all)</span>
+                  <a *ngIf="!r.is_fallback" [href]="'https://' + r.hostname" target="_blank" class="resource-link font-monospace">
+                    https://{{ r.hostname }} <i class="bi bi-box-arrow-up-right small"></i>
+                  </a>
+                </td>
+                <td><span class="font-monospace text-muted">{{ r.service }}</span></td>
+                <td>
+                  <span class="azure-status-pill running" *ngIf="healthMap[r.hostname]?.alive">
+                    <span class="azure-status-dot"></span> HTTP {{ healthMap[r.hostname].status }}
+                  </span>
+                  <span class="azure-status-pill stopped" *ngIf="healthMap[r.hostname] && !healthMap[r.hostname].alive">
+                    <span class="azure-status-dot"></span> Offline
+                  </span>
+                  <span class="azure-text-muted small" *ngIf="!healthMap[r.hostname]">Cloudflare Edge</span>
+                </td>
+                <td class="text-end">
+                  <button class="azure-toolbar-btn py-0 px-2" *ngIf="!r.is_fallback" (click)="deleteRoute(r.hostname)">
+                    <i class="bi bi-trash text-danger"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-        <!-- Add Route Card Form -->
-        <div class="card card-portal p-3 mb-3 bg-light" *ngIf="isAddingRoute">
-          <h6 class="fw-bold text-dark mb-2">Register New Cloudflare Ingress Route</h6>
-          <div class="row g-2">
-            <div class="col-md-6">
-              <label class="form-label small text-muted">Subdomain (e.g. portal or myapp)</label>
-              <div class="input-group input-group-sm">
-                <input type="text" class="form-control font-monospace" [(ngModel)]="newRouteHost" placeholder="subdomain" />
-                <span class="input-group-text font-monospace">.pottapk.win</span>
+      <!-- Sub-Tab 2: Port Radar -->
+      <div class="azure-card" *ngIf="activeNetTab === 'ports'">
+        <div class="azure-card-header">
+          <span>Port Radar (Live Open TCP Sockets on Pi)</span>
+          <span class="badge bg-secondary font-monospace">{{ ports.length }} Ports</span>
+        </div>
+        <div class="azure-table-container">
+          <table class="azure-table">
+            <thead>
+              <tr>
+                <th>Port</th>
+                <th>Process</th>
+                <th>PID</th>
+                <th>User</th>
+                <th>Associated Container</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of ports">
+                <td><span class="badge bg-warning-subtle text-warning font-monospace fw-bold fs-6">:{{ p.port }}</span></td>
+                <td><span class="font-monospace fw-semibold">{{ p.process }}</span></td>
+                <td><span class="font-monospace text-muted">{{ p.pid }}</span></td>
+                <td><span class="azure-text-muted small">{{ p.user }}</span></td>
+                <td>
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace" *ngIf="p.containers?.length">
+                    {{ p.containers?.join(', ') }}
+                  </span>
+                  <span class="azure-text-muted fst-italic small" *ngIf="!p.containers?.length">Host service</span>
+                </td>
+                <td class="text-end">
+                  <button class="azure-toolbar-btn py-0 px-2 font-monospace" (click)="killPid(p.pid)" *ngIf="p.pid !== 'N/A'">Kill PID</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 6: DISKS & STORAGE                                             -->
+    <!-- =================================================================== -->
+    <div class="p-3 flex-grow-1" *ngIf="activeTab === 'storage'">
+      <!-- Command Bar -->
+      <div class="azure-toolbar mb-3">
+        <button class="azure-toolbar-btn primary" (click)="pruneDocker()" [disabled]="isPruning">
+          <i class="bi bi-trash3"></i>
+          <span>{{ isPruning ? 'Pruning...' : 'Prune Storage' }}</span>
+        </button>
+        <button class="azure-toolbar-btn" (click)="loadAllData(true)">
+          <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+      </div>
+
+      <!-- Mount Points Row -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-6" *ngFor="let d of storage?.disks">
+          <div class="azure-card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div>
+                <span class="fw-bold font-monospace fs-6">{{ d.filesystem }}</span>
+                <div class="azure-text-muted small">Mounted on: <span class="font-monospace">{{ d.mounted_on }}</span></div>
+              </div>
+              <span class="azure-status-pill running fs-6"><span class="azure-status-dot"></span> {{ d.use_percent }} Used</span>
+            </div>
+            <div class="progress my-2" style="height: 6px;">
+              <div class="progress-bar bg-success" [style.width]="d.use_percent"></div>
+            </div>
+            <div class="d-flex justify-content-between azure-text-muted small font-monospace">
+              <span>Used: {{ d.used }}</span>
+              <span>Free: {{ d.avail }}</span>
+              <span>Total: {{ d.size }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Docker Layer Footprint -->
+      <div class="azure-card">
+        <div class="azure-card-header">Docker Storage Breakdown (docker system df)</div>
+        <div class="azure-table-container">
+          <table class="azure-table">
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Total Count</th>
+                <th>Active</th>
+                <th>Disk Size</th>
+                <th>Reclaimable</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of storage?.docker_usage">
+                <td class="fw-bold">{{ item.Type }}</td>
+                <td class="font-monospace">{{ item.TotalCount }}</td>
+                <td class="font-monospace">{{ item.Active }}</td>
+                <td class="font-monospace fw-bold">{{ item.Size }}</td>
+                <td class="font-monospace text-success fw-semibold">{{ item.Reclaimable }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 7: MONITORING & SYSTEM DAEMONS                                 -->
+    <!-- =================================================================== -->
+    <div class="p-3 flex-grow-1" *ngIf="activeTab === 'monitoring'">
+      <!-- Command Bar -->
+      <div class="azure-toolbar mb-3">
+        <button class="azure-toolbar-btn" (click)="triggerPower('reboot')">
+          <i class="bi bi-arrow-repeat text-warning"></i> Reboot Pi
+        </button>
+        <button class="azure-toolbar-btn" (click)="triggerPower('shutdown')">
+          <i class="bi bi-power text-danger"></i> Shutdown
+        </button>
+        <button class="azure-toolbar-btn" (click)="loadAllData(true)">
+          <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+      </div>
+
+      <!-- Service Cards -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-3" *ngFor="let s of services">
+          <div class="azure-card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="fw-bold font-monospace">{{ s.name }}</span>
+              <span class="azure-status-pill" [class.running]="s.active" [class.stopped]="!s.active">
+                <span class="azure-status-dot"></span> {{ s.status | uppercase }}
+              </span>
+            </div>
+            <div class="azure-text-muted small font-monospace mb-3">Boot State: {{ s.enabled }}</div>
+            <div class="d-flex justify-content-between align-items-center border-top border-secondary-subtle pt-2">
+              <button class="azure-toolbar-btn py-0 px-2" (click)="selectedJournalService = s.name; loadJournalLogs(s.name)">Logs</button>
+              <div>
+                <button class="azure-toolbar-btn py-0 px-2" (click)="onControlService(s.name, 'restart')" title="Restart"><i class="bi bi-arrow-repeat"></i></button>
+                <button class="azure-toolbar-btn py-0 px-2" (click)="onControlService(s.name, 'stop')" *ngIf="s.active" title="Stop"><i class="bi bi-stop-fill text-danger"></i></button>
+                <button class="azure-toolbar-btn py-0 px-2" (click)="onControlService(s.name, 'start')" *ngIf="!s.active" title="Start"><i class="bi bi-play-fill text-success"></i></button>
               </div>
             </div>
-            <div class="col-md-4">
-              <label class="form-label small text-muted">Target Port or Service URL</label>
-              <input type="text" class="form-control form-control-sm font-monospace" [(ngModel)]="newRouteService" placeholder="8095 or http://localhost:8095" />
-            </div>
-            <div class="col-md-2 d-flex align-items-end">
-              <button class="btn btn-primary btn-sm w-100" (click)="saveRoute()" [disabled]="isSavingRoute">
-                {{ isSavingRoute ? 'Saving...' : 'Save & Reload' }}
-              </button>
-            </div>
           </div>
         </div>
+      </div>
 
-        <!-- Ingress Table -->
-        <div class="card card-portal mb-4">
-          <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <span>Cloudflare Ingress Routing Table (/etc/cloudflared/config.yml)</span>
-            <span class="badge bg-secondary font-monospace">{{ ingressConfig?.rules?.length || 0 }} Rules</span>
+      <!-- Live Journalctl Logs -->
+      <div class="azure-card">
+        <div class="azure-card-header">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-file-text text-primary"></i>
+            <span>Live Journalctl Stream</span>
+            <select class="form-select form-select-sm azure-input font-monospace" style="width: 170px;" [(ngModel)]="selectedJournalService" (change)="loadJournalLogs()">
+              <option value="cloudflared">cloudflared.service</option>
+              <option value="docker">docker.service</option>
+              <option value="ssh">ssh.service</option>
+              <option value="cron">cron.service</option>
+            </select>
           </div>
-          <div class="table-responsive">
-            <table class="table table-hover table-striped align-middle mb-0">
-              <thead>
-                <tr>
-                  <th>Public Subdomain</th>
-                  <th>Destination Service</th>
-                  <th>Edge Status</th>
-                  <th class="text-end">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let r of ingressConfig?.rules">
-                  <td>
-                    <span *ngIf="r.is_fallback" class="font-monospace text-muted fst-italic">Fallback (Catch-all)</span>
-                    <a *ngIf="!r.is_fallback" [href]="'https://' + r.hostname" target="_blank" class="fw-semibold font-monospace text-primary text-decoration-none">
-                      https://{{ r.hostname }} <i class="bi bi-box-arrow-up-right small"></i>
-                    </a>
-                  </td>
-                  <td><span class="font-monospace text-muted">{{ r.service }}</span></td>
-                  <td>
-                    <span class="badge bg-success-subtle text-success border border-success-subtle" *ngIf="healthMap[r.hostname]?.alive">
-                      HTTP {{ healthMap[r.hostname].status }}
-                    </span>
-                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle" *ngIf="healthMap[r.hostname] && !healthMap[r.hostname].alive">
-                      Offline
-                    </span>
-                    <span class="badge bg-light text-secondary border" *ngIf="!healthMap[r.hostname]">Cloudflare Edge</span>
-                  </td>
-                  <td class="text-end">
-                    <button class="btn btn-outline-danger btn-sm py-0 px-2" *ngIf="!r.is_fallback" (click)="deleteRoute(r.hostname)">
-                      <i class="bi bi-trash"></i>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Port Radar Scanner -->
-        <div class="card card-portal">
-          <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <span>Port Radar (Open TCP Sockets on Pi)</span>
-            <button class="btn btn-sm btn-link p-0 text-decoration-none" (click)="loadAllData(false)">Rescan</button>
-          </div>
-          <div class="table-responsive">
-            <table class="table table-hover table-striped align-middle mb-0">
-              <thead>
-                <tr>
-                  <th>Port</th>
-                  <th>Process</th>
-                  <th>PID</th>
-                  <th>User</th>
-                  <th>Associated Container</th>
-                  <th class="text-end">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let p of ports">
-                  <td><span class="badge bg-warning-subtle text-warning-emphasis font-monospace fw-bold fs-6">:{{ p.port }}</span></td>
-                  <td><span class="font-monospace text-dark">{{ p.process }}</span></td>
-                  <td><span class="font-monospace text-muted">{{ p.pid }}</span></td>
-                  <td><span class="text-muted small">{{ p.user }}</span></td>
-                  <td>
-                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace" *ngIf="p.containers?.length">
-                      {{ p.containers?.join(', ') }}
-                    </span>
-                    <span class="text-muted fst-italic small" *ngIf="!p.containers?.length">Host service</span>
-                  </td>
-                  <td class="text-end">
-                    <button class="btn btn-outline-danger btn-sm py-0 px-2 font-monospace" (click)="killPid(p.pid)" *ngIf="p.pid !== 'N/A'">Kill PID</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- =================================================================== -->
-      <!-- TAB 5: STORAGE & DISKS -->
-      <!-- =================================================================== -->
-      <section *ngIf="activeTab === 'storage'">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-          <div>
-            <h4 class="fw-bold mb-0 text-dark"><i class="bi bi-hdd-network text-warning me-2"></i>Disks & Persistent Storage</h4>
-            <div class="text-muted small">NVMe SSD partition breakdown, mount points, and Docker layer cleaner</div>
-          </div>
-          <button class="btn btn-warning btn-sm d-flex align-items-center gap-1 shadow-sm" (click)="pruneDocker()" [disabled]="isPruning">
-            <i class="bi bi-trash3"></i>
-            <span>{{ isPruning ? 'Pruning...' : 'Prune Docker Storage' }}</span>
+          <button class="azure-toolbar-btn" (click)="loadJournalLogs()" [disabled]="isLoadingJournal">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
           </button>
         </div>
-
-        <pre class="alert alert-success font-monospace small" *ngIf="pruneOutput">{{ pruneOutput }}</pre>
-
-        <!-- Host Mounts Row -->
-        <div class="row g-3 mb-4">
-          <div class="col-md-6" *ngFor="let d of storage?.disks">
-            <div class="card card-portal p-3">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <div>
-                  <span class="fw-bold font-monospace text-dark fs-6">{{ d.filesystem }}</span>
-                  <div class="text-muted small">Mounted on: <span class="font-monospace text-dark">{{ d.mounted_on }}</span></div>
-                </div>
-                <span class="badge bg-success-subtle text-success border border-success-subtle font-monospace fs-6">{{ d.use_percent }} Used</span>
-              </div>
-              <div class="progress my-2" style="height: 8px;">
-                <div class="progress-bar bg-success" [style.width]="d.use_percent"></div>
-              </div>
-              <div class="d-flex justify-content-between text-muted small font-monospace">
-                <span>Used: {{ d.used }}</span>
-                <span>Free: {{ d.avail }}</span>
-                <span>Total: {{ d.size }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Docker System DF Breakdown -->
-        <div class="card card-portal">
-          <div class="card-header bg-white">Docker Layer Footprint (docker system df)</div>
-          <div class="table-responsive">
-            <table class="table table-hover table-striped align-middle mb-0">
-              <thead>
-                <tr>
-                  <th>Component</th>
-                  <th>Total Count</th>
-                  <th>Active</th>
-                  <th>Disk Size</th>
-                  <th>Reclaimable</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let item of storage?.docker_usage">
-                  <td class="fw-bold text-dark">{{ item.Type }}</td>
-                  <td class="font-monospace">{{ item.TotalCount }}</td>
-                  <td class="font-monospace">{{ item.Active }}</td>
-                  <td class="font-monospace fw-bold text-dark">{{ item.Size }}</td>
-                  <td class="font-monospace text-success fw-semibold">{{ item.Reclaimable }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- =================================================================== -->
-      <!-- TAB 6: MONITORING & LOGS -->
-      <!-- =================================================================== -->
-      <section *ngIf="activeTab === 'monitoring'">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-          <div>
-            <h4 class="fw-bold mb-0 text-dark"><i class="bi bi-activity text-danger me-2"></i>Monitoring & System Daemons</h4>
-            <div class="text-muted small">Systemd service states, journalctl logs, and hardware power controls</div>
-          </div>
-          <div class="d-flex gap-2">
-            <button class="btn btn-outline-warning btn-sm" (click)="triggerPower('reboot')">
-              <i class="bi bi-arrow-repeat me-1"></i> Reboot Pi
-            </button>
-            <button class="btn btn-outline-danger btn-sm" (click)="triggerPower('shutdown')">
-              <i class="bi bi-power me-1"></i> Shutdown
-            </button>
-          </div>
-        </div>
-
-        <div class="alert alert-info py-2 small font-monospace" *ngIf="serviceActionMsg">{{ serviceActionMsg }}</div>
-
-        <!-- Service Cards -->
-        <div class="row g-3 mb-4">
-          <div class="col-md-3" *ngFor="let s of services">
-            <div class="card card-portal p-3">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="fw-bold font-monospace text-dark">{{ s.name }}</span>
-                <span class="badge" [class.bg-success]="s.active" [class.bg-danger]="!s.active">{{ s.status | uppercase }}</span>
-              </div>
-              <div class="text-muted small font-monospace mb-3">Boot State: {{ s.enabled }}</div>
-              <div class="d-flex justify-content-between align-items-center border-top pt-2">
-                <button class="btn btn-sm btn-link p-0 text-decoration-none" (click)="selectedJournalService = s.name; loadJournalLogs(s.name)">Logs</button>
-                <div>
-                  <button class="btn btn-outline-warning btn-sm py-0 px-2 me-1" (click)="onControlService(s.name, 'restart')" title="Restart"><i class="bi bi-arrow-repeat"></i></button>
-                  <button class="btn btn-outline-danger btn-sm py-0 px-2 me-1" (click)="onControlService(s.name, 'stop')" *ngIf="s.active" title="Stop"><i class="bi bi-stop-fill"></i></button>
-                  <button class="btn btn-outline-success btn-sm py-0 px-2" (click)="onControlService(s.name, 'start')" *ngIf="!s.active" title="Start"><i class="bi bi-play-fill"></i></button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- System Journal Logs -->
-        <div class="card card-portal">
-          <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-2">
-              <i class="bi bi-file-text text-primary"></i>
-              <span>Live Journalctl Logs</span>
-              <select class="form-select form-select-sm font-monospace" style="width: 160px;" [(ngModel)]="selectedJournalService" (change)="loadJournalLogs()">
-                <option value="cloudflared">cloudflared.service</option>
-                <option value="docker">docker.service</option>
-                <option value="ssh">ssh.service</option>
-                <option value="cron">cron.service</option>
-              </select>
-            </div>
-            <button class="btn btn-outline-secondary btn-sm" (click)="loadJournalLogs()" [disabled]="isLoadingJournal">
-              <i class="bi bi-arrow-clockwise"></i> Refresh
-            </button>
-          </div>
-          <pre class="terminal-window mb-0" style="max-height: 400px;">{{ journalLogs || 'Loading logs...' }}</pre>
-        </div>
-      </section>
-
+        <pre class="azure-terminal mb-0" style="max-height: 400px;">{{ journalLogs || 'Loading logs...' }}</pre>
+      </div>
     </div>
   </main>
 </div>
 
-<!-- =================================================================== -->
-<!-- MODAL: DEPLOY APP SERVICE -->
-<!-- =================================================================== -->
+<!-- ============================================================================= -->
+<!-- AZURE CLOUD SHELL TERMINAL (BOTTOM DOCKED DRAWER)                             -->
+<!-- ============================================================================= -->
+<div
+  class="position-fixed bottom-0 start-0 end-0 shadow-lg z-3"
+  style="height: 380px; display: flex; flex-direction: column; background-color: var(--azure-terminal-bg); border-top: 2px solid var(--azure-primary);"
+  *ngIf="isShellOpen"
+>
+  <div class="d-flex align-items-center justify-content-between px-3 py-1 border-bottom border-secondary-subtle" style="background-color: var(--azure-card-header-bg);">
+    <div class="d-flex align-items-center gap-2 font-monospace small">
+      <i class="bi bi-terminal-fill text-warning"></i>
+      <span class="fw-bold">Pi Cloud Shell (Bash)</span>
+      <span class="badge bg-secondary font-monospace">pavankumarpotta&#64;192.168.1.151</span>
+    </div>
+    <div class="d-flex align-items-center gap-1">
+      <button class="azure-toolbar-btn py-0 px-2 font-monospace small" (click)="runShellCommand('docker ps')">docker ps</button>
+      <button class="azure-toolbar-btn py-0 px-2 font-monospace small" (click)="runShellCommand('vcgencmd measure_temp')">temp</button>
+      <button class="azure-toolbar-btn py-0 px-2 font-monospace small" (click)="runShellCommand('free -h')">free -h</button>
+      <button class="azure-toolbar-btn py-0 px-2 font-monospace small" (click)="runShellCommand('df -h /')">df -h</button>
+      <button class="azure-icon-btn ms-2" (click)="isShellOpen = false"><i class="bi bi-x-lg"></i></button>
+    </div>
+  </div>
+
+  <div class="flex-grow-1 p-3 overflow-auto font-monospace small text-light" style="background-color: var(--azure-terminal-bg);">
+    <div *ngFor="let item of shellHistory" class="mb-2">
+      <div class="text-success fw-bold">pavankumarpotta&#64;raspberrypi:~$ <span class="text-white">{{ item.cmd }}</span></div>
+      <pre class="azure-text-muted ps-2 mb-0 overflow-visible" style="white-space: pre-wrap; font-family: inherit;">{{ item.output }}</pre>
+    </div>
+    <div class="text-warning small" *ngIf="isRunningShell">
+      <span class="spinner-border spinner-border-sm me-1"></span> Executing command on Pi...
+    </div>
+  </div>
+
+  <div class="p-2 border-top border-secondary-subtle d-flex align-items-center gap-2" style="background-color: var(--azure-card-header-bg);">
+    <span class="text-success font-monospace fw-bold ps-2">rpi:~$</span>
+    <input
+      type="text"
+      class="form-control form-control-sm azure-input font-monospace flex-grow-1"
+      placeholder="Type bash command..."
+      [(ngModel)]="shellInput"
+      (keydown.enter)="runShellCommand()"
+      [disabled]="isRunningShell"
+      autofocus
+    />
+    <button class="azure-toolbar-btn primary px-3" (click)="runShellCommand()" [disabled]="isRunningShell || !shellInput.trim()">
+      Run
+    </button>
+  </div>
+</div>
+
+<!-- ============================================================================= -->
+<!-- MODAL: DEPLOY APP SERVICE                                                     -->
+<!-- ============================================================================= -->
 <div class="modal d-block bg-black bg-opacity-50" tabindex="-1" *ngIf="isDeployModalOpen">
   <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content shadow-lg border-0">
-      <div class="modal-header bg-light">
-        <h5 class="modal-title fw-bold text-dark"><i class="bi bi-rocket-takeoff text-primary me-2"></i>Deploy App Service</h5>
+    <div class="modal-content azure-modal-content">
+      <div class="azure-modal-header d-flex justify-content-between align-items-center">
+        <h6 class="modal-title fw-bold mb-0"><i class="bi bi-globe2 text-primary me-2"></i>Create App Service</h6>
         <button type="button" class="btn-close" (click)="closeDeployModal()"></button>
       </div>
-      <div class="modal-body p-4">
+      <div class="p-4">
         <div class="alert alert-danger py-2 small" *ngIf="deployError">{{ deployError }}</div>
 
         <!-- Presets -->
         <div class="mb-3">
-          <label class="form-label small fw-semibold text-secondary">Quick Deployment Templates</label>
+          <label class="form-label small fw-semibold azure-text-secondary">Quick Deployment Templates</label>
           <div class="d-flex flex-wrap gap-2">
-            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="applyTemplate('nextjs')">Next.js Web</button>
-            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="applyTemplate('fastapi')">Python FastAPI</button>
-            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="applyTemplate('nginx')">Nginx Static</button>
-            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="applyTemplate('go')">Go Microservice</button>
+            <button type="button" class="azure-toolbar-btn" (click)="applyTemplate('nextjs')">Next.js Web</button>
+            <button type="button" class="azure-toolbar-btn" (click)="applyTemplate('fastapi')">Python FastAPI</button>
+            <button type="button" class="azure-toolbar-btn" (click)="applyTemplate('nginx')">Nginx Static</button>
+            <button type="button" class="azure-toolbar-btn" (click)="applyTemplate('go')">Go Microservice</button>
           </div>
         </div>
 
         <div class="row g-3 mb-3">
           <div class="col-md-6">
             <label class="form-label small fw-semibold">App Service Name *</label>
-            <input type="text" class="form-control form-control-sm" [(ngModel)]="deployForm.name" placeholder="my-service" />
+            <input type="text" class="form-control azure-input" [(ngModel)]="deployForm.name" placeholder="my-service" />
           </div>
           <div class="col-md-6">
             <label class="form-label small fw-semibold">Docker Image *</label>
-            <input type="text" class="form-control form-control-sm font-monospace" [(ngModel)]="deployForm.image" placeholder="nginx:alpine" />
+            <input type="text" class="form-control azure-input font-monospace" [(ngModel)]="deployForm.image" placeholder="nginx:alpine" />
           </div>
         </div>
 
         <div class="row g-3 mb-3">
           <div class="col-md-4">
             <label class="form-label small fw-semibold">Host Port</label>
-            <input type="number" class="form-control form-control-sm font-monospace" [(ngModel)]="deployForm.host_port" placeholder="8095" />
+            <input type="number" class="form-control azure-input font-monospace" [(ngModel)]="deployForm.host_port" placeholder="8095" />
           </div>
           <div class="col-md-4">
             <label class="form-label small fw-semibold">Container Port</label>
-            <input type="number" class="form-control form-control-sm font-monospace" [(ngModel)]="deployForm.container_port" placeholder="80" />
+            <input type="number" class="form-control azure-input font-monospace" [(ngModel)]="deployForm.container_port" placeholder="80" />
           </div>
           <div class="col-md-4">
             <label class="form-label small fw-semibold">Restart Policy</label>
-            <select class="form-select form-select-sm" [(ngModel)]="deployForm.restart_policy">
+            <select class="form-select form-select-sm azure-input" [(ngModel)]="deployForm.restart_policy">
               <option value="unless-stopped">Unless Stopped</option>
               <option value="always">Always</option>
               <option value="no">No</option>
@@ -941,22 +1210,22 @@
         </div>
 
         <!-- Cloudflare Subdomain auto-route -->
-        <div class="card p-3 bg-light mb-3">
-          <label class="form-label small fw-semibold text-primary mb-1">Cloudflare Subdomain Route (Optional)</label>
+        <div class="azure-card p-3 mb-3">
+          <label class="form-label small fw-semibold text-primary mb-1">Cloudflare Ingress Domain (Optional)</label>
           <div class="input-group input-group-sm">
-            <input type="text" class="form-control font-monospace" [(ngModel)]="deployForm.subdomain" placeholder="demo" />
+            <input type="text" class="form-control azure-input font-monospace" [(ngModel)]="deployForm.subdomain" placeholder="demo" />
             <span class="input-group-text font-monospace">.pottapk.win</span>
           </div>
-          <div class="form-text small">Automatically binds to Cloudflare Tunnel ingress when deployed!</div>
+          <div class="azure-text-muted small mt-1">Automatically binds to Cloudflare Tunnel ingress when deployed!</div>
         </div>
 
         <!-- Environment Variables -->
         <div>
           <label class="form-label small fw-semibold">Environment Variables</label>
           <div class="input-group input-group-sm mb-2">
-            <input type="text" class="form-control font-monospace" placeholder="KEY" [(ngModel)]="deployEnvKey" />
-            <input type="text" class="form-control font-monospace" placeholder="VALUE" [(ngModel)]="deployEnvValue" />
-            <button class="btn btn-outline-secondary" type="button" (click)="addEnvVar()">+ Add</button>
+            <input type="text" class="form-control azure-input font-monospace" placeholder="KEY" [(ngModel)]="deployEnvKey" />
+            <input type="text" class="form-control azure-input font-monospace" placeholder="VALUE" [(ngModel)]="deployEnvValue" />
+            <button class="azure-toolbar-btn" type="button" (click)="addEnvVar()">+ Add</button>
           </div>
           <div class="d-flex flex-wrap gap-1" *ngIf="deployEnvList.length">
             <span class="badge bg-secondary font-monospace d-flex align-items-center gap-1 p-2" *ngFor="let env of deployEnvList; let i = index">
@@ -966,110 +1235,131 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer bg-light">
-        <button type="button" class="btn btn-secondary btn-sm" (click)="closeDeployModal()">Cancel</button>
-        <button type="button" class="btn btn-primary btn-sm" (click)="submitDeploy()" [disabled]="isDeploying">
-          {{ isDeploying ? 'Deploying to Pi...' : 'Deploy Container' }}
+      <div class="azure-modal-footer d-flex justify-content-end gap-2">
+        <button type="button" class="azure-toolbar-btn" (click)="closeDeployModal()">Cancel</button>
+        <button type="button" class="azure-toolbar-btn primary" (click)="submitDeploy()" [disabled]="isDeploying">
+          {{ isDeploying ? 'Deploying to Pi...' : 'Review + Create' }}
         </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- =================================================================== -->
-<!-- MODAL: LIVE CONTAINER LOGS -->
-<!-- =================================================================== -->
+<!-- ============================================================================= -->
+<!-- MODAL: LIVE CONTAINER LOGS                                                    -->
+<!-- ============================================================================= -->
 <div class="modal d-block bg-black bg-opacity-50" tabindex="-1" *ngIf="activeLogApp">
   <div class="modal-dialog modal-xl modal-dialog-centered">
-    <div class="modal-content shadow-lg border-0 bg-dark text-white">
-      <div class="modal-header border-secondary py-2">
-        <h6 class="modal-title font-monospace text-info mb-0">
+    <div class="modal-content azure-modal-content">
+      <div class="azure-modal-header d-flex justify-content-between align-items-center">
+        <h6 class="modal-title font-monospace text-primary mb-0">
           <i class="bi bi-terminal me-2"></i>Container Logs: {{ activeLogApp }}
         </h6>
         <div class="d-flex align-items-center gap-2">
-          <button class="btn btn-sm btn-outline-light py-0 px-2" (click)="fetchAppLogs()" [disabled]="isLoadingLogs">Refresh</button>
-          <button type="button" class="btn-close btn-close-white" (click)="closeLogsModal()"></button>
+          <button class="azure-toolbar-btn py-0 px-2" (click)="fetchAppLogs()" [disabled]="isLoadingLogs">Refresh</button>
+          <button type="button" class="btn-close" (click)="closeLogsModal()"></button>
         </div>
       </div>
-      <div class="p-2 border-bottom border-secondary bg-black d-flex justify-content-between align-items-center">
-        <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary w-50" placeholder="Filter lines..." [(ngModel)]="logFilter" />
-        <span class="small text-secondary font-monospace">{{ filteredLogLines.length }} lines</span>
+      <div class="p-2 border-bottom border-secondary-subtle d-flex justify-content-between align-items-center" style="background-color: var(--azure-card-header-bg);">
+        <input type="text" class="form-control form-control-sm azure-input w-50" placeholder="Filter log lines..." [(ngModel)]="logFilter" />
+        <span class="small azure-text-muted font-monospace">{{ filteredLogLines.length }} lines</span>
       </div>
-      <pre class="terminal-window mb-0" style="max-height: 500px; height: 500px;">{{ filteredLogLines.join('\n') }}</pre>
+      <pre class="azure-terminal mb-0" style="max-height: 500px; height: 500px;">{{ filteredLogLines.join('\n') }}</pre>
     </div>
   </div>
 </div>
 
-<!-- =================================================================== -->
-<!-- MODAL: EXEC IN CONTAINER -->
-<!-- =================================================================== -->
+<!-- ============================================================================= -->
+<!-- MODAL: EXEC IN CONTAINER                                                      -->
+<!-- ============================================================================= -->
 <div class="modal d-block bg-black bg-opacity-50" tabindex="-1" *ngIf="activeExecApp">
   <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content shadow-lg border-0 bg-dark text-white">
-      <div class="modal-header border-secondary py-2">
+    <div class="modal-content azure-modal-content">
+      <div class="azure-modal-header d-flex justify-content-between align-items-center">
         <h6 class="modal-title font-monospace text-warning mb-0">
           <i class="bi bi-terminal me-2"></i>docker exec -i {{ activeExecApp }}
         </h6>
-        <button type="button" class="btn-close btn-close-white" (click)="closeExecModal()"></button>
+        <button type="button" class="btn-close" (click)="closeExecModal()"></button>
       </div>
-      <div class="modal-body p-3">
+      <div class="p-3">
         <div class="input-group input-group-sm mb-3">
-          <span class="input-group-text bg-black border-secondary text-success font-monospace">#</span>
-          <input type="text" class="form-control bg-black text-white border-secondary font-monospace" placeholder="e.g. ls -la, env, node -v..." [(ngModel)]="execCmd" (keydown.enter)="runExec()" />
-          <button class="btn btn-warning" (click)="runExec()" [disabled]="isExecuting">Run</button>
+          <span class="input-group-text azure-input font-monospace">#</span>
+          <input type="text" class="form-control azure-input font-monospace" placeholder="e.g. ls -la, env, node -v..." [(ngModel)]="execCmd" (keydown.enter)="runExec()" />
+          <button class="azure-toolbar-btn primary" (click)="runExec()" [disabled]="isExecuting">Run</button>
         </div>
-        <pre class="terminal-window mb-0" style="max-height: 300px;" *ngIf="execResult">{{ execResult.stdout || execResult.stderr || '(No output)' }}</pre>
+        <pre class="azure-terminal mb-0" style="max-height: 300px;" *ngIf="execResult">{{ execResult.stdout || execResult.stderr || '(No output)' }}</pre>
       </div>
     </div>
   </div>
 </div>
 
-<!-- =================================================================== -->
-<!-- BOTTOM DRAWER: CLOUD SHELL TERMINAL -->
-<!-- =================================================================== -->
-<div
-  class="position-fixed bottom-0 start-0 end-0 bg-dark border-top border-secondary shadow-lg z-3"
-  style="height: 380px; display: flex; flex-direction: column;"
-  *ngIf="isShellOpen"
->
-  <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom border-secondary bg-black text-white">
-    <div class="d-flex align-items-center gap-2 font-monospace small">
-      <i class="bi bi-terminal-fill text-warning"></i>
-      <span class="fw-bold">Pi Cloud Shell</span>
-      <span class="badge bg-secondary-subtle text-secondary border font-monospace">SSH pavankumarpotta&#64;192.168.1.151</span>
-    </div>
-    <div class="d-flex align-items-center gap-1">
-      <button class="btn btn-sm btn-outline-secondary py-0 px-2 font-monospace small text-white" (click)="runShellCommand('docker ps')">docker ps</button>
-      <button class="btn btn-sm btn-outline-secondary py-0 px-2 font-monospace small text-white" (click)="runShellCommand('vcgencmd measure_temp')">temp</button>
-      <button class="btn btn-sm btn-outline-secondary py-0 px-2 font-monospace small text-white" (click)="runShellCommand('free -h')">free -h</button>
-      <button class="btn btn-sm btn-outline-secondary py-0 px-2 font-monospace small text-white" (click)="runShellCommand('df -h /')">df -h</button>
-      <button class="btn btn-sm btn-link text-secondary p-0 ms-2" (click)="isShellOpen = false"><i class="bi bi-x-lg"></i></button>
-    </div>
-  </div>
+<!-- ============================================================================= -->
+<!-- MODAL: AZURE PORTAL SETTINGS (THEME & PREFERENCES)                            -->
+<!-- ============================================================================= -->
+<div class="modal d-block bg-black bg-opacity-50" tabindex="-1" *ngIf="isSettingsOpen">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content azure-modal-content">
+      <div class="azure-modal-header d-flex justify-content-between align-items-center">
+        <h6 class="modal-title fw-bold mb-0"><i class="bi bi-gear text-primary me-2"></i>Portal Settings</h6>
+        <button type="button" class="btn-close" (click)="isSettingsOpen = false"></button>
+      </div>
+      <div class="p-4">
+        <!-- Theme Selection -->
+        <label class="form-label small fw-semibold azure-text-secondary mb-2">Portal Theme</label>
+        <div class="row g-2 mb-4">
+          <div class="col-6">
+            <div
+              class="azure-card p-3 text-center cursor-pointer mb-0"
+              [style.border]="theme === 'light' ? '2px solid var(--azure-primary)' : '1px solid var(--azure-card-border)'"
+              (click)="setTheme('light')"
+            >
+              <i class="bi bi-sun-fill text-warning fs-3 mb-2 d-block"></i>
+              <div class="fw-bold">Light Mode</div>
+              <div class="azure-text-muted small">Classic Azure White</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div
+              class="azure-card p-3 text-center cursor-pointer mb-0"
+              [style.border]="theme === 'dark' ? '2px solid var(--azure-primary)' : '1px solid var(--azure-card-border)'"
+              (click)="setTheme('dark')"
+            >
+              <i class="bi bi-moon-stars-fill text-primary fs-3 mb-2 d-block"></i>
+              <div class="fw-bold">Dark Mode</div>
+              <div class="azure-text-muted small">Azure Deep Charcoal</div>
+            </div>
+          </div>
+        </div>
 
-  <div class="flex-grow-1 p-3 overflow-auto bg-black font-monospace small text-light">
-    <div *ngFor="let item of shellHistory" class="mb-2">
-      <div class="text-success fw-bold">pavankumarpotta&#64;raspberrypi:~$ <span class="text-white">{{ item.cmd }}</span></div>
-      <pre class="text-secondary ps-2 mb-0 overflow-visible" style="white-space: pre-wrap;">{{ item.output }}</pre>
-    </div>
-    <div class="text-warning small" *ngIf="isRunningShell">
-      <span class="spinner-border spinner-border-sm me-1"></span> Executing command on Pi...
-    </div>
-  </div>
+        <!-- Telemetry Polling Rate -->
+        <label class="form-label small fw-semibold azure-text-secondary mb-1">Telemetry Refresh Frequency</label>
+        <select class="form-select form-select-sm azure-input font-monospace mb-4" [(ngModel)]="refreshIntervalMs" (change)="onRefreshIntervalChange()">
+          <option [ngValue]="5000">Live (every 5 seconds)</option>
+          <option [ngValue]="15000">Normal (every 15 seconds)</option>
+          <option [ngValue]="30000">Relaxed (every 30 seconds)</option>
+          <option [ngValue]="0">Paused (manual refresh only)</option>
+        </select>
 
-  <div class="p-2 bg-dark border-top border-secondary d-flex align-items-center gap-2">
-    <span class="text-success font-monospace fw-bold ps-2">rpi:~$</span>
-    <input
-      type="text"
-      class="form-control form-control-sm bg-black text-white border-secondary font-monospace"
-      placeholder="Type bash command..."
-      [(ngModel)]="shellInput"
-      (keydown.enter)="runShellCommand()"
-      [disabled]="isRunningShell"
-      autofocus
-    />
-    <button class="btn btn-primary btn-sm px-3" (click)="runShellCommand()" [disabled]="isRunningShell || !shellInput.trim()">
-      Run
-    </button>
+        <!-- System Summary -->
+        <div class="azure-card p-3 mb-0">
+          <div class="fw-semibold small mb-2"><i class="bi bi-info-circle text-primary me-1"></i> PiCloud Node Info</div>
+          <div class="d-flex justify-content-between small azure-text-muted mb-1 font-monospace">
+            <span>Server:</span>
+            <span class="text-white">Raspberry Pi 5 (192.168.1.151)</span>
+          </div>
+          <div class="d-flex justify-content-between small azure-text-muted mb-1 font-monospace">
+            <span>Tunnel:</span>
+            <span>pottapk-tunnel (Cloudflare)</span>
+          </div>
+          <div class="d-flex justify-content-between small azure-text-muted font-monospace">
+            <span>UI Framework:</span>
+            <span>Angular 17 + Bootstrap 5.3</span>
+          </div>
+        </div>
+      </div>
+      <div class="azure-modal-footer d-flex justify-content-end">
+        <button type="button" class="azure-toolbar-btn primary" (click)="isSettingsOpen = false">Done</button>
+      </div>
+    </div>
   </div>
 </div>

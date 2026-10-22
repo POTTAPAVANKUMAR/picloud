@@ -2,127 +2,709 @@
 @import "bootstrap/scss/bootstrap";
 @import "bootstrap-icons/font/bootstrap-icons.css";
 
-// Enterprise Admin Dashboard Styling (No AI Neon / Glassmorphism)
-:root {
-  --app-sidebar-width: 250px;
-  --app-bg: #f8f9fa;
-  --app-card-border: #e9ecef;
+// =============================================================================
+// Microsoft Azure Portal Theme System (Light Mode & Dark Mode)
+// =============================================================================
+:root, [data-bs-theme="light"], [data-azure-theme="light"] {
+  --azure-primary: #0078d4;
+  --azure-primary-hover: #106ebe;
+  --azure-primary-active: #005a9e;
+  --azure-primary-subtle: #deecf9;
+  
+  --azure-header-bg: #0078d4;
+  --azure-header-color: #ffffff;
+  --azure-header-btn-hover: rgba(255, 255, 255, 0.15);
+  --azure-header-search-bg: #ffffff;
+  --azure-header-search-color: #201f1e;
+  --azure-header-search-border: #c8c6c4;
+  
+  --azure-bg: #f3f2f1;
+  --azure-canvas: #faf9f8;
+  --azure-sidebar-bg: #ffffff;
+  --azure-sidebar-border: #edebe9;
+  --azure-sidebar-text: #201f1e;
+  --azure-sidebar-hover: #f3f2f1;
+  --azure-sidebar-active-bg: #eff6fc;
+  --azure-sidebar-active-text: #0078d4;
+  
+  --azure-card-bg: #ffffff;
+  --azure-card-border: #edebe9;
+  --azure-card-header-bg: #ffffff;
+  --azure-essentials-bg: #faf9f8;
+  
+  --azure-toolbar-bg: #ffffff;
+  --azure-toolbar-border: #edebe9;
+  --azure-toolbar-btn: #201f1e;
+  --azure-toolbar-btn-hover: #f3f2f1;
+  
+  --azure-tab-border: #edebe9;
+  --azure-tab-active-color: #0078d4;
+  
+  --azure-table-header-bg: #faf9f8;
+  --azure-table-header-color: #605e5c;
+  --azure-table-border: #edebe9;
+  --azure-table-row-hover: #f3f2f1;
+  --azure-table-text: #201f1e;
+  
+  --azure-text-primary: #201f1e;
+  --azure-text-secondary: #605e5c;
+  --azure-text-muted: #a19f9d;
+  
+  --azure-input-bg: #ffffff;
+  --azure-input-border: #8a8886;
+  --azure-input-color: #201f1e;
+  
+  --azure-terminal-bg: #1e1e1e;
+  --azure-terminal-color: #d4d4d4;
+  --azure-modal-bg: #ffffff;
+  --azure-modal-header: #faf9f8;
+  --azure-modal-border: #edebe9;
 }
 
+[data-bs-theme="dark"], [data-azure-theme="dark"] {
+  --azure-primary: #2899f5;
+  --azure-primary-hover: #0078d4;
+  --azure-primary-active: #106ebe;
+  --azure-primary-subtle: #0f2b48;
+  
+  --azure-header-bg: #111827;
+  --azure-header-color: #f3f2f1;
+  --azure-header-btn-hover: rgba(255, 255, 255, 0.1);
+  --azure-header-search-bg: #1f2937;
+  --azure-header-search-color: #f3f2f1;
+  --azure-header-search-border: #374151;
+  
+  --azure-bg: #121212;
+  --azure-canvas: #181818;
+  --azure-sidebar-bg: #1e1e1e;
+  --azure-sidebar-border: #2d2d2d;
+  --azure-sidebar-text: #f3f2f1;
+  --azure-sidebar-hover: #2a2d2e;
+  --azure-sidebar-active-bg: #252526;
+  --azure-sidebar-active-text: #2899f5;
+  
+  --azure-card-bg: #1e1e1e;
+  --azure-card-border: #333333;
+  --azure-card-header-bg: #1e1e1e;
+  --azure-essentials-bg: #252526;
+  
+  --azure-toolbar-bg: #1e1e1e;
+  --azure-toolbar-border: #333333;
+  --azure-toolbar-btn: #f3f2f1;
+  --azure-toolbar-btn-hover: #2a2d2e;
+  
+  --azure-tab-border: #333333;
+  --azure-tab-active-color: #2899f5;
+  
+  --azure-table-header-bg: #252526;
+  --azure-table-header-color: #a19f9d;
+  --azure-table-border: #333333;
+  --azure-table-row-hover: #2a2d2e;
+  --azure-table-text: #f3f2f1;
+  
+  --azure-text-primary: #f3f2f1;
+  --azure-text-secondary: #a19f9d;
+  --azure-text-muted: #797775;
+  
+  --azure-input-bg: #181818;
+  --azure-input-border: #484644;
+  --azure-input-color: #f3f2f1;
+  
+  --azure-terminal-bg: #0d1117;
+  --azure-terminal-color: #d4d4d4;
+  --azure-modal-bg: #1e1e1e;
+  --azure-modal-header: #252526;
+  --azure-modal-border: #333333;
+}
+
+// Base Typography & Reset
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background-color: var(--app-bg);
-  color: #212529;
-  font-size: 0.875rem;
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--azure-bg);
+  color: var(--azure-text-primary);
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-// Enterprise Header
-.navbar-portal {
-  background-color: #1a222d !important;
-  border-bottom: 1px solid #2d3748;
+// =============================================================================
+// Azure Global Header
+// =============================================================================
+.azure-header {
+  height: 48px;
+  background-color: var(--azure-header-bg);
+  color: var(--azure-header-color);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  user-select: none;
+  z-index: 1040;
 }
 
-.brand-icon {
-  width: 32px;
-  height: 32px;
-  background: #0d6efd;
-  color: white;
-  border-radius: 6px;
+.azure-icon-btn {
+  background: transparent;
+  border: none;
+  color: inherit;
+  width: 36px;
+  height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  
+  &:hover {
+    background-color: var(--azure-header-btn-hover);
+  }
 }
 
-// Classic Sidebar
-.sidebar-portal {
-  width: var(--app-sidebar-width);
-  min-height: calc(100vh - 56px);
-  background-color: #ffffff;
-  border-right: 1px solid #dee2e6;
+.azure-portal-title {
+  font-size: 15px;
+  letter-spacing: -0.2px;
 }
 
-.sidebar-portal .nav-link {
-  color: #495057;
-  font-weight: 500;
-  padding: 0.65rem 1rem;
-  border-radius: 6px;
-  margin-bottom: 2px;
+.azure-tenant-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.18);
+  font-family: monospace;
+}
+
+.azure-search-container {
+  position: relative;
+  width: 440px;
+}
+
+.azure-search-icon {
+  position: absolute;
+  left: 10px;
+  color: #8a8886;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.azure-search-input {
+  width: 100%;
+  height: 30px;
+  padding: 4px 50px 4px 30px;
+  font-size: 12px;
+  background-color: var(--azure-header-search-bg);
+  color: var(--azure-header-search-color);
+  border: 1px solid var(--azure-header-search-border);
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  
+  &:focus {
+    border-color: var(--azure-primary);
+    box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.25);
+  }
+  
+  &::placeholder {
+    color: #8a8886;
+  }
+}
+
+.azure-search-kbd {
+  position: absolute;
+  right: 8px;
+  font-size: 10px;
+  background: rgba(0, 0, 0, 0.08);
+  color: #605e5c;
+  padding: 2px 4px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+[data-bs-theme="dark"] .azure-search-kbd {
+  background: rgba(255, 255, 255, 0.1);
+  color: #a19f9d;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.azure-utility-btn {
+  background: transparent;
+  border: none;
+  color: inherit;
+  padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  
+  &:hover {
+    background-color: var(--azure-header-btn-hover);
+  }
+}
+
+.azure-avatar {
+  width: 30px;
+  height: 30px;
+  background-color: #5c2d91;
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// =============================================================================
+// Azure Breadcrumbs & Action Toolbar
+// =============================================================================
+.azure-subnav-bar {
+  background-color: var(--azure-toolbar-bg);
+  border-bottom: 1px solid var(--azure-toolbar-border);
+  padding: 6px 16px;
+  min-height: 40px;
+}
+
+.azure-breadcrumb {
+  font-size: 12px;
+  margin-bottom: 0;
+  
+  a {
+    color: var(--azure-primary);
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  
+  .separator {
+    color: var(--azure-text-muted);
+    margin: 0 6px;
+  }
+  
+  .current {
+    color: var(--azure-text-primary);
+    font-weight: 600;
+  }
+}
+
+.azure-toolbar {
+  background-color: var(--azure-toolbar-bg);
+  border-bottom: 1px solid var(--azure-toolbar-border);
+  padding: 4px 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.azure-toolbar-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--azure-toolbar-btn);
+  padding: 5px 10px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  
+  i {
+    font-size: 13px;
+    color: var(--azure-primary);
+  }
+  
+  &:hover {
+    background-color: var(--azure-toolbar-btn-hover);
+    border-color: var(--azure-toolbar-border);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  &.primary {
+    background-color: var(--azure-primary);
+    color: #ffffff;
+    border-color: var(--azure-primary);
+    i {
+      color: #ffffff;
+    }
+    &:hover {
+      background-color: var(--azure-primary-hover);
+    }
+  }
+}
+
+.azure-toolbar-divider {
+  width: 1px;
+  height: 20px;
+  background-color: var(--azure-toolbar-border);
+  margin: 0 4px;
+}
+
+// =============================================================================
+// Azure Left Sidebar
+// =============================================================================
+.azure-sidebar {
+  width: 220px;
+  min-height: calc(100vh - 48px);
+  background-color: var(--azure-sidebar-bg);
+  border-right: 1px solid var(--azure-sidebar-border);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  
+  &.collapsed {
+    width: 52px;
+    
+    .sidebar-label, .sidebar-section-title, .sidebar-badge {
+      display: none !important;
+    }
+    
+    .azure-nav-item {
+      justify-content: center;
+      padding: 10px 0;
+    }
+  }
+}
+
+.sidebar-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--azure-text-muted);
+  letter-spacing: 0.5px;
+  padding: 8px 16px 4px 16px;
+}
+
+.azure-nav-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: all 0.15s ease-in-out;
+  padding: 8px 16px;
+  color: var(--azure-sidebar-text);
+  text-decoration: none;
+  font-size: 13px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all 0.15s ease;
+  
+  &:hover {
+    background-color: var(--azure-sidebar-hover);
+    color: var(--azure-text-primary);
+  }
+  
+  &.active {
+    background-color: var(--azure-sidebar-active-bg);
+    color: var(--azure-sidebar-active-text);
+    font-weight: 600;
+    border-left-color: var(--azure-primary);
+  }
 }
 
-.sidebar-portal .nav-link:hover {
-  background-color: #f1f3f5;
-  color: #0d6efd;
+.azure-service-icon {
+  font-size: 15px;
+  width: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  
+  &.app-service { color: #0078d4; }
+  &.sql { color: #00bcf2; }
+  &.networking { color: #008272; }
+  &.storage { color: #107c41; }
+  &.monitoring { color: #d83b01; }
+  &.shell { color: #ff8c00; }
+  &.home { color: #0078d4; }
 }
 
-.sidebar-portal .nav-link.active {
-  background-color: #e7f1ff;
-  color: #0d6efd;
+// =============================================================================
+// Azure Essentials Box
+// =============================================================================
+.azure-essentials-box {
+  background-color: var(--azure-essentials-bg);
+  border: 1px solid var(--azure-card-border);
+  border-radius: 2px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.azure-essentials-label {
+  font-size: 11px;
+  color: var(--azure-text-secondary);
+  text-transform: none;
+  margin-bottom: 2px;
+}
+
+.azure-essentials-value {
+  font-size: 13px;
   font-weight: 600;
+  color: var(--azure-text-primary);
 }
 
-// Crisp Enterprise Cards
-.card-portal {
-  background-color: #ffffff;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  margin-bottom: 1.25rem;
+// =============================================================================
+// Azure Service Tiles (Home View)
+// =============================================================================
+.azure-service-tile {
+  background-color: var(--azure-card-bg);
+  border: 1px solid var(--azure-card-border);
+  border-radius: 4px;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: var(--azure-primary);
+  }
+  
+  .tile-icon {
+    font-size: 26px;
+    margin-bottom: 8px;
+  }
+  
+  .tile-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--azure-text-primary);
+    line-height: 1.2;
+  }
 }
 
-.card-portal .card-header {
-  background-color: #ffffff;
-  border-bottom: 1px solid #e9ecef;
-  padding: 0.75rem 1.25rem;
-  font-weight: 600;
-}
-
-// Metric Stat Boxes
-.metric-box {
-  background: #ffffff;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  padding: 1rem 1.25rem;
+// =============================================================================
+// Azure Cards & Containers
+// =============================================================================
+.azure-card {
+  background-color: var(--azure-card-bg);
+  border: 1px solid var(--azure-card-border);
+  border-radius: 2px;
+  margin-bottom: 16px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
-.metric-title {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  color: #6c757d;
+.azure-card-header {
+  background-color: var(--azure-card-header-bg);
+  border-bottom: 1px solid var(--azure-card-border);
+  padding: 10px 16px;
   font-weight: 600;
-  letter-spacing: 0.5px;
+  font-size: 13px;
+  color: var(--azure-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.metric-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #212529;
-  margin-top: 0.25rem;
+// =============================================================================
+// Azure Horizontal Tabs
+// =============================================================================
+.azure-tab-bar {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--azure-tab-border);
+  margin-bottom: 16px;
+  overflow-x: auto;
 }
 
-// Terminal & Log Viewer
-.terminal-window {
-  background-color: #1e1e1e;
-  color: #d4d4d4;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.8rem;
-  border-radius: 6px;
-  padding: 1rem;
+.azure-tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--azure-text-secondary);
+  font-size: 13px;
+  padding: 8px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  
+  &:hover {
+    color: var(--azure-text-primary);
+    border-bottom-color: var(--azure-tab-border);
+  }
+  
+  &.active {
+    color: var(--azure-tab-active-color);
+    font-weight: 600;
+    border-bottom-color: var(--azure-tab-active-color);
+  }
+}
+
+// =============================================================================
+// Azure DataGrid & Tables
+// =============================================================================
+.azure-table-container {
+  overflow-x: auto;
+}
+
+.azure-table {
+  width: 100%;
+  margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12px;
+  
+  thead th {
+    background-color: var(--azure-table-header-bg);
+    color: var(--azure-table-header-color);
+    font-weight: 600;
+    font-size: 11px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--azure-table-border);
+    border-top: none;
+    text-align: left;
+    white-space: nowrap;
+  }
+  
+  tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--azure-table-border);
+    color: var(--azure-table-text);
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  
+  tbody tr {
+    background-color: var(--azure-card-bg);
+    transition: background-color 0.1s ease;
+    
+    &:hover {
+      background-color: var(--azure-table-row-hover);
+    }
+  }
+  
+  .resource-link {
+    color: var(--azure-primary);
+    text-decoration: none;
+    font-weight: 600;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Azure Status Pills
+.azure-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  
+  .azure-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+  
+  &.running {
+    color: #107c41;
+    .azure-status-dot {
+      background-color: #107c41;
+      box-shadow: 0 0 0 2px rgba(16, 124, 65, 0.2);
+    }
+  }
+  
+  &.stopped {
+    color: #d13438;
+    .azure-status-dot {
+      background-color: #d13438;
+    }
+  }
+  
+  &.warning {
+    color: #ffaa44;
+    .azure-status-dot {
+      background-color: #ffaa44;
+    }
+  }
+}
+
+[data-bs-theme="dark"] .azure-status-pill.running {
+  color: #6bb700;
+  .azure-status-dot {
+    background-color: #6bb700;
+  }
+}
+
+[data-bs-theme="dark"] .azure-status-pill.stopped {
+  color: #ff6f6f;
+  .azure-status-dot {
+    background-color: #ff6f6f;
+  }
+}
+
+// =============================================================================
+// Azure Form Inputs & Controls
+// =============================================================================
+.azure-input {
+  background-color: var(--azure-input-bg) !important;
+  color: var(--azure-input-color) !important;
+  border: 1px solid var(--azure-input-border) !important;
+  border-radius: 2px !important;
+  font-size: 12px;
+  padding: 4px 8px;
+  
+  &:focus {
+    border-color: var(--azure-primary) !important;
+    box-shadow: 0 0 0 1px var(--azure-primary) !important;
+  }
+}
+
+// =============================================================================
+// Azure Terminal & Log Window
+// =============================================================================
+.azure-terminal {
+  background-color: var(--azure-terminal-bg);
+  color: var(--azure-terminal-color);
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 12px;
+  padding: 12px;
+  border-radius: 2px;
   overflow-y: auto;
 }
 
-// Table Polish
-.table th {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #6c757d;
-  font-weight: 600;
-  background-color: #f8f9fa;
-  border-top: none;
+// =============================================================================
+// Azure Modal & Flyout Blades
+// =============================================================================
+.azure-modal-content {
+  background-color: var(--azure-modal-bg);
+  border: 1px solid var(--azure-modal-border);
+  border-radius: 2px;
+  color: var(--azure-text-primary);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.azure-modal-header {
+  background-color: var(--azure-modal-header);
+  border-bottom: 1px solid var(--azure-modal-border);
+  padding: 12px 16px;
+}
+
+.azure-modal-footer {
+  background-color: var(--azure-modal-header);
+  border-top: 1px solid var(--azure-modal-border);
+  padding: 10px 16px;
+}
+
+// Utilities
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

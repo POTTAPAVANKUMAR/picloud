@@ -18,7 +18,7 @@ import {
 } from './models/types';
 import { Subscription, interval, switchMap } from 'rxjs';
 
-export type NavTab = 'dashboard' | 'apps' | 'sql' | 'networking' | 'storage' | 'monitoring' | 'shell';
+export type NavTab = 'home' | 'dashboard' | 'apps' | 'sql' | 'networking' | 'storage' | 'monitoring' | 'shell';
 
 @Component({
   selector: 'app-root',
@@ -28,8 +28,19 @@ export type NavTab = 'dashboard' | 'apps' | 'sql' | 'networking' | 'storage' | '
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'PiCloud Console';
-  activeTab: NavTab = 'dashboard';
+  title = 'Microsoft Azure - PiCloud Portal';
+  activeTab: NavTab = 'home';
+
+  // Azure Theme System (Dark Mode & Light Mode)
+  theme: 'light' | 'dark' = 'dark';
+  isSettingsOpen = false;
+
+  // Azure Navigation & Blades
+  isSidebarCollapsed = false;
+  appViewMode: 'grid' | 'cards' = 'grid';
+  activeSqlTab: 'overview' | 'query' | 'strings' | 'tables' = 'overview';
+  activeNetTab: 'ingress' | 'ports' = 'ingress';
+  activeStorageTab: 'disks' | 'docker' = 'disks';
 
   // Core Data
   stats: SystemTelemetry | null = null;
@@ -130,8 +141,34 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(private api: ApiService) {}
 
   ngOnInit(): void {
+    this.initTheme();
     this.loadAllData();
     this.startPolling();
+  }
+
+  initTheme(): void {
+    const saved = localStorage.getItem('picloud-azure-theme') as 'light' | 'dark' | null;
+    if (saved) {
+      this.setTheme(saved);
+    } else {
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      this.setTheme(prefersDark ? 'dark' : 'light');
+    }
+  }
+
+  toggleTheme(): void {
+    this.setTheme(this.theme === 'dark' ? 'light' : 'dark');
+  }
+
+  setTheme(theme: 'light' | 'dark'): void {
+    this.theme = theme;
+    document.documentElement.setAttribute('data-bs-theme', theme);
+    document.body.setAttribute('data-azure-theme', theme);
+    localStorage.setItem('picloud-azure-theme', theme);
+  }
+
+  toggleSidebar(): void {
+    this.isSidebarCollapsed = !this.isSidebarCollapsed;
   }
 
   ngOnDestroy(): void {
